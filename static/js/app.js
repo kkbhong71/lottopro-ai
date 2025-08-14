@@ -141,7 +141,7 @@ class LottoProAI {
             const input = document.getElementById(`num${i}`);
             const value = parseInt(input.value);
             if (!isNaN(value) && value >= 1 && value <= 45) {
-                userNumbers.push(value);
+                userNumbers.push(value); // 수정: append → push
             }
         }
         return [...new Set(userNumbers)]; // 중복 제거
@@ -154,8 +154,8 @@ class LottoProAI {
         
         const userNumbers = this.getUserNumbers();
         
-        // 중복 검사
-        if (this.hasDuplicateNumbers()) {
+        // 중복 검사는 실제로 번호가 입력된 경우에만
+        if (userNumbers.length > 0 && this.hasDuplicateNumbers()) {
             this.showToast('중복된 번호를 제거해주세요', 'error');
             return;
         }
@@ -163,14 +163,14 @@ class LottoProAI {
         try {
             this.startLoading();
             
-            // AI 예측 요청
+            // AI 예측 요청 (사용자 번호가 없어도 실행)
             const response = await fetch('/api/predict', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    user_numbers: userNumbers
+                    user_numbers: userNumbers // 빈 배열이어도 OK
                 })
             });
             
@@ -183,7 +183,12 @@ class LottoProAI {
             if (data.success) {
                 this.currentPrediction = data;
                 await this.displayResults(data);
-                this.showToast('AI 예측이 완료되었습니다! 🎯', 'success');
+                
+                if (userNumbers.length > 0) {
+                    this.showToast(`선호 번호 ${userNumbers.length}개를 포함한 AI 예측이 완료되었습니다! 🎯`, 'success');
+                } else {
+                    this.showToast('AI 완전 랜덤 예측이 완료되었습니다! 🎯', 'success');
+                }
                 
                 // 결과로 스크롤
                 setTimeout(() => {
@@ -205,15 +210,27 @@ class LottoProAI {
     }
     
     hasDuplicateNumbers() {
-        const numbers = this.getUserNumbers();
-        const inputs = [];
+        const filledInputs = []; // 실제로 값이 입력된 필드들만
         
         for (let i = 1; i <= 6; i++) {
             const input = document.getElementById(`num${i}`);
-            if (input.value && input.classList.contains('is-invalid')) {
+            if (input.value && input.value.trim() !== '') {
+                filledInputs.push(input);
+            }
+        }
+        
+        // 입력된 값이 없으면 중복 없음
+        if (filledInputs.length === 0) {
+            return false;
+        }
+        
+        // 입력된 값들 중에서만 중복 검사
+        for (const input of filledInputs) {
+            if (input.classList.contains('is-invalid')) {
                 return true;
             }
         }
+        
         return false;
     }
     
