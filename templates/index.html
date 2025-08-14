@@ -1,0 +1,357 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center min-vh-100">
+            <div class="col-lg-6">
+                <div class="hero-content">
+                    <h1 class="display-4 fw-bold text-white mb-4">
+                        🎯 AI가 예측하는<br>
+                        <span class="text-warning">로또 당첨번호</span>
+                    </h1>
+                    <p class="lead text-white-50 mb-4">
+                        5가지 독자적인 AI 모델이 과거 데이터를 분석하여 
+                        최적의 로또 예상번호를 추천해드립니다.
+                    </p>
+                    <div class="hero-stats row text-center mb-4">
+                        <div class="col-4">
+                            <div class="stat-item">
+                                <h3 class="text-warning">5</h3>
+                                <small class="text-white-50">AI 모델</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="stat-item">
+                                <h3 class="text-warning">1000+</h3>
+                                <small class="text-white-50">분석 회차</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="stat-item">
+                                <h3 class="text-warning">FREE</h3>
+                                <small class="text-white-50">완전 무료</small>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="#prediction" class="btn btn-warning btn-lg px-4 py-3 rounded-pill">
+                        <i class="fas fa-magic me-2"></i>지금 예측 시작하기
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-animation text-center">
+                    <div class="lotto-ball-container">
+                        <div class="lotto-ball lotto-ball-1">1</div>
+                        <div class="lotto-ball lotto-ball-2">7</div>
+                        <div class="lotto-ball lotto-ball-3">13</div>
+                        <div class="lotto-ball lotto-ball-4">25</div>
+                        <div class="lotto-ball lotto-ball-5">31</div>
+                        <div class="lotto-ball lotto-ball-6">42</div>
+                    </div>
+                    <p class="text-white-50 mt-3">AI가 분석한 예상번호 예시</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold">🤖 5가지 AI 예측 모델</h2>
+            <p class="lead text-muted">각기 다른 방식으로 분석하여 최적의 예측을 제공합니다</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h5>빈도분석 모델</h5>
+                    <p class="text-muted">과거 당첨번호 출현 빈도를 분석하여 가중 확률로 예측</p>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-trending-up"></i>
+                    </div>
+                    <h5>트렌드분석 모델</h5>
+                    <p class="text-muted">최근 당첨 패턴과 트렌드를 분석하여 시기별 변화 반영</p>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                    <h5>패턴분석 모델</h5>
+                    <p class="text-muted">번호 조합 패턴과 수학적 관계를 분석하여 복합 예측</p>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-calculator"></i>
+                    </div>
+                    <h5>통계분석 모델</h5>
+                    <p class="text-muted">고급 통계 기법과 확률 이론을 적용한 수학적 예측</p>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h5>머신러닝 모델</h5>
+                    <p class="text-muted">딥러닝 신경망과 AI 알고리즘 기반 고도화된 예측</p>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="fas fa-crown"></i>
+                    </div>
+                    <h5>종합추천 시스템</h5>
+                    <p class="text-muted">5가지 모델 결과를 종합하여 최고의 추천번호 선별</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Prediction Section -->
+<section id="prediction" class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="prediction-wrapper">
+                    <div class="text-center mb-5">
+                        <h2 class="display-5 fw-bold">🎲 AI 예상번호 생성</h2>
+                        <p class="lead text-muted">원하는 번호가 있다면 입력하세요. AI가 나머지를 추천해드립니다!</p>
+                    </div>
+                    
+                    <!-- User Input Section -->
+                    <div class="card shadow-lg border-0 mb-4">
+                        <div class="card-header bg-gradient-primary text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-heart me-2"></i>선호하는 번호 입력 (선택사항)
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="predictionForm">
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">
+                                        생일, 기념일 등 원하는 번호를 입력하세요 (1~45)
+                                    </label>
+                                    <div class="number-input-grid">
+                                        <input type="number" class="form-control number-input" 
+                                               placeholder="번호1" min="1" max="45" id="num1">
+                                        <input type="number" class="form-control number-input" 
+                                               placeholder="번호2" min="1" max="45" id="num2">
+                                        <input type="number" class="form-control number-input" 
+                                               placeholder="번호3" min="1" max="45" id="num3">
+                                        <input type="number" class="form-control number-input" 
+                                               placeholder="번호4" min="1" max="45" id="num4">
+                                        <input type="number" class="form-control number-input" 
+                                               placeholder="번호5" min="1" max="45" id="num5">
+                                        <input type="number" class="form-control number-input" 
+                                               placeholder="번호6" min="1" max="45" id="num6">
+                                    </div>
+                                    <small class="text-muted">
+                                        💡 비워두면 AI가 모든 번호를 자동으로 선택합니다
+                                    </small>
+                                </div>
+                                
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-gradient-primary btn-lg px-5 py-3 rounded-pill">
+                                        <i class="fas fa-magic me-2"></i>
+                                        <span class="btn-text">AI 예상번호 생성하기</span>
+                                        <div class="spinner-border spinner-border-sm ms-2 d-none" role="status"></div>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <!-- Loading Indicator -->
+                    <div id="loadingSection" class="text-center py-5 d-none">
+                        <div class="loading-animation">
+                            <div class="spinner-grow text-primary" role="status"></div>
+                            <div class="spinner-grow text-success" role="status"></div>
+                            <div class="spinner-grow text-warning" role="status"></div>
+                        </div>
+                        <h4 class="mt-3">AI 모델이 데이터를 분석하고 있습니다...</h4>
+                        <p class="text-muted">잠시만 기다려주세요. 최적의 번호를 찾고 있어요! 🤖</p>
+                    </div>
+                    
+                    <!-- Results Section -->
+                    <div id="resultsSection" class="d-none">
+                        <!-- Top Recommendations -->
+                        <div class="card shadow-lg border-0 mb-4">
+                            <div class="card-header bg-gradient-success text-white">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-crown me-2"></i>AI 최고 추천 번호 TOP 5
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="topRecommendations" class="row g-3">
+                                    <!-- Dynamic content -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Model Results -->
+                        <div class="card shadow-lg border-0">
+                            <div class="card-header bg-gradient-info text-white">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-robot me-2"></i>모델별 상세 분석 결과
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="modelResults">
+                                    <!-- Dynamic content -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section id="stats" class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold">📊 실시간 통계 분석</h2>
+            <p class="lead text-muted">과거 당첨 데이터를 기반으로 한 실시간 분석 결과</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-6">
+                <div class="card shadow border-0 h-100">
+                    <div class="card-header bg-danger text-white">
+                        <h6 class="mb-0"><i class="fas fa-fire me-2"></i>핫 넘버 (자주 나오는 번호)</h6>
+                    </div>
+                    <div class="card-body">
+                        <div id="hotNumbers" class="number-display">
+                            <!-- Dynamic content -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-6">
+                <div class="card shadow border-0 h-100">
+                    <div class="card-header bg-primary text-white">
+                        <h6 class="mb-0"><i class="fas fa-snowflake me-2"></i>콜드 넘버 (잘 안 나오는 번호)</h6>
+                    </div>
+                    <div class="card-body">
+                        <div id="coldNumbers" class="number-display">
+                            <!-- Dynamic content -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section id="about" class="py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h2 class="display-5 fw-bold mb-4">🎯 왜 LottoPro AI인가요?</h2>
+                <div class="about-features">
+                    <div class="about-feature-item">
+                        <i class="fas fa-check-circle text-success me-3"></i>
+                        <div>
+                            <h6>100% 무료 서비스</h6>
+                            <p class="text-muted mb-0">고품질 AI 예측을 완전 무료로 제공합니다</p>
+                        </div>
+                    </div>
+                    <div class="about-feature-item">
+                        <i class="fas fa-check-circle text-success me-3"></i>
+                        <div>
+                            <h6>5가지 독자적 AI 모델</h6>
+                            <p class="text-muted mb-0">다양한 분석 방식으로 정확도를 높였습니다</p>
+                        </div>
+                    </div>
+                    <div class="about-feature-item">
+                        <i class="fas fa-check-circle text-success me-3"></i>
+                        <div>
+                            <h6>개인화 추천 시스템</h6>
+                            <p class="text-muted mb-0">사용자의 선호번호를 반영한 맞춤 추천</p>
+                        </div>
+                    </div>
+                    <div class="about-feature-item">
+                        <i class="fas fa-check-circle text-success me-3"></i>
+                        <div>
+                            <h6>실시간 데이터 분석</h6>
+                            <p class="text-muted mb-0">최신 당첨 패턴을 실시간으로 반영합니다</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="about-image text-center">
+                    <div class="ai-brain-animation">
+                        <i class="fas fa-brain fa-8x text-primary opacity-75"></i>
+                        <div class="brain-pulse"></div>
+                    </div>
+                    <p class="mt-3 text-muted">AI가 24시간 데이터를 분석합니다</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// 페이지 로드 시 통계 데이터 로드
+document.addEventListener('DOMContentLoaded', function() {
+    loadStatistics();
+});
+
+async function loadStatistics() {
+    try {
+        const response = await fetch('/api/stats');
+        const data = await response.json();
+        
+        if (data.hot_numbers && data.cold_numbers) {
+            displayHotNumbers(data.hot_numbers);
+            displayColdNumbers(data.cold_numbers);
+        }
+    } catch (error) {
+        console.error('통계 로드 실패:', error);
+    }
+}
+
+function displayHotNumbers(hotNumbers) {
+    const container = document.getElementById('hotNumbers');
+    container.innerHTML = hotNumbers.slice(0, 8).map(([num, freq]) => 
+        `<div class="lotto-ball hot-number" title="${freq}회 출현">${num}</div>`
+    ).join('');
+}
+
+function displayColdNumbers(coldNumbers) {
+    const container = document.getElementById('coldNumbers');
+    container.innerHTML = coldNumbers.slice(0, 8).map(([num, freq]) => 
+        `<div class="lotto-ball cold-number" title="${freq}회 출현">${num}</div>`
+    ).join('');
+}
+</script>
+{% endblock %}
