@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 import os
 import random
-import pandas as pd
+# import pandas as pd  ← 이 줄 제거 (사용되지 않음)
 import numpy as np
 from datetime import datetime
 import json
