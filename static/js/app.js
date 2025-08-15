@@ -1,4 +1,4 @@
-// LottoPro AI Advanced JavaScript Application
+// LottoPro AI Advanced JavaScript Application (개선된 버전)
 
 class LottoProAI {
     constructor() {
@@ -135,18 +135,22 @@ class LottoProAI {
         }
     }
     
+    // 개선된 getUserNumbers 함수
     getUserNumbers() {
         const userNumbers = [];
         for (let i = 1; i <= 6; i++) {
             const input = document.getElementById(`num${i}`);
-            const value = parseInt(input.value);
-            if (!isNaN(value) && value >= 1 && value <= 45) {
-                userNumbers.push(value); // 수정: append → push
+            if (input && input.value && input.value.trim() !== '') {
+                const value = parseInt(input.value.trim());
+                if (!isNaN(value) && value >= 1 && value <= 45) {
+                    userNumbers.push(value);
+                }
             }
         }
         return [...new Set(userNumbers)]; // 중복 제거
     }
     
+    // 개선된 예측 요청 함수
     async handlePredictionSubmit(event) {
         event.preventDefault();
         
@@ -163,22 +167,41 @@ class LottoProAI {
         try {
             this.startLoading();
             
-            // AI 예측 요청 (사용자 번호가 없어도 실행)
+            // 요청 데이터 검증
+            const requestData = {
+                user_numbers: userNumbers || [] // null/undefined 방지
+            };
+            
+            console.log('전송 데이터:', requestData); // 디버깅용
+            
+            // AI 예측 요청
             const response = await fetch('/api/predict', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    user_numbers: userNumbers // 빈 배열이어도 OK
-                })
+                body: JSON.stringify(requestData)
             });
             
+            console.log('응답 상태:', response.status); // 디버깅용
+            
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                // HTTP 상태 코드 별 에러 처리
+                let errorMessage = `서버 오류 (${response.status})`;
+                
+                if (response.status === 400) {
+                    errorMessage = '잘못된 요청입니다. 번호를 다시 확인해주세요.';
+                } else if (response.status === 500) {
+                    errorMessage = '서버 내부 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+                } else if (response.status === 404) {
+                    errorMessage = '요청한 서비스를 찾을 수 없습니다.';
+                }
+                
+                throw new Error(errorMessage);
             }
             
             const data = await response.json();
+            console.log('응답 데이터:', data); // 디버깅용
             
             if (data.success) {
                 this.currentPrediction = data;
@@ -192,63 +215,80 @@ class LottoProAI {
                 
                 // 결과로 스크롤
                 setTimeout(() => {
-                    document.getElementById('resultsSection').scrollIntoView({ 
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
+                    const resultsSection = document.getElementById('resultsSection');
+                    if (resultsSection) {
+                        resultsSection.scrollIntoView({ 
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
                 }, 500);
             } else {
-                throw new Error(data.error || '예측 중 오류가 발생했습니다');
+                throw new Error(data.error || '예측 중 알 수 없는 오류가 발생했습니다');
             }
             
         } catch (error) {
             console.error('예측 오류:', error);
-            this.showToast('예측 중 오류가 발생했습니다: ' + error.message, 'error');
+            
+            // 네트워크 오류 vs 서버 오류 구분
+            let errorMessage = error.message;
+            if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                errorMessage = '네트워크 연결에 문제가 있습니다. 인터넷 연결을 확인해주세요.';
+            }
+            
+            this.showToast(errorMessage, 'error');
         } finally {
             this.stopLoading();
         }
     }
     
+    // 개선된 중복 검사 함수
     hasDuplicateNumbers() {
-        const filledInputs = []; // 실제로 값이 입력된 필드들만
+        const filledInputs = [];
+        const values = [];
         
         for (let i = 1; i <= 6; i++) {
             const input = document.getElementById(`num${i}`);
-            if (input.value && input.value.trim() !== '') {
-                filledInputs.push(input);
+            if (input && input.value && input.value.trim() !== '') {
+                const value = parseInt(input.value.trim());
+                if (!isNaN(value)) {
+                    filledInputs.push(input);
+                    values.push(value);
+                }
             }
         }
         
         // 입력된 값이 없으면 중복 없음
-        if (filledInputs.length === 0) {
+        if (values.length === 0) {
             return false;
         }
         
-        // 입력된 값들 중에서만 중복 검사
-        for (const input of filledInputs) {
-            if (input.classList.contains('is-invalid')) {
-                return true;
-            }
-        }
-        
-        return false;
+        // 중복 검사
+        const uniqueValues = new Set(values);
+        return uniqueValues.size !== values.length;
     }
     
+    // 개선된 로딩 상태 관리
     startLoading() {
         this.isLoading = true;
         
         // 버튼 상태 변경
         const button = document.querySelector('#predictionForm button[type="submit"]');
-        const buttonText = button.querySelector('.btn-text');
-        const spinner = button.querySelector('.spinner-border');
-        
-        buttonText.textContent = 'AI가 분석 중...';
-        spinner.classList.remove('d-none');
-        button.disabled = true;
+        if (button) {
+            const buttonText = button.querySelector('.btn-text');
+            const spinner = button.querySelector('.spinner-border');
+            
+            if (buttonText) buttonText.textContent = 'AI가 분석 중...';
+            if (spinner) spinner.classList.remove('d-none');
+            button.disabled = true;
+        }
         
         // 로딩 섹션 표시
-        document.getElementById('loadingSection').classList.remove('d-none');
-        document.getElementById('resultsSection').classList.add('d-none');
+        const loadingSection = document.getElementById('loadingSection');
+        const resultsSection = document.getElementById('resultsSection');
+        
+        if (loadingSection) loadingSection.classList.remove('d-none');
+        if (resultsSection) resultsSection.classList.add('d-none');
         
         // 로딩 애니메이션 효과
         this.animateLoadingEffect();
@@ -259,15 +299,18 @@ class LottoProAI {
         
         // 버튼 상태 복원
         const button = document.querySelector('#predictionForm button[type="submit"]');
-        const buttonText = button.querySelector('.btn-text');
-        const spinner = button.querySelector('.spinner-border');
-        
-        buttonText.textContent = 'AI 예상번호 생성하기';
-        spinner.classList.add('d-none');
-        button.disabled = false;
+        if (button) {
+            const buttonText = button.querySelector('.btn-text');
+            const spinner = button.querySelector('.spinner-border');
+            
+            if (buttonText) buttonText.textContent = 'AI 예상번호 생성하기';
+            if (spinner) spinner.classList.add('d-none');
+            button.disabled = false;
+        }
         
         // 로딩 섹션 숨김
-        document.getElementById('loadingSection').classList.add('d-none');
+        const loadingSection = document.getElementById('loadingSection');
+        if (loadingSection) loadingSection.classList.add('d-none');
     }
     
     animateLoadingEffect() {
@@ -291,14 +334,19 @@ class LottoProAI {
                 return;
             }
             
-            loadingText.textContent = loadingTexts[index];
-            index = (index + 1) % loadingTexts.length;
+            if (loadingText) {
+                loadingText.textContent = loadingTexts[index];
+                index = (index + 1) % loadingTexts.length;
+            }
         }, 1500);
     }
     
     async displayResults(data) {
         // 결과 섹션 표시
-        document.getElementById('resultsSection').classList.remove('d-none');
+        const resultsSection = document.getElementById('resultsSection');
+        if (resultsSection) {
+            resultsSection.classList.remove('d-none');
+        }
         
         // 최고 추천 번호 표시
         await this.displayTopRecommendations(data.top_recommendations, data.user_numbers);
@@ -312,6 +360,8 @@ class LottoProAI {
     
     async displayTopRecommendations(recommendations, userNumbers) {
         const container = document.getElementById('topRecommendations');
+        if (!container) return;
+        
         container.innerHTML = '';
         
         for (let i = 0; i < recommendations.length; i++) {
@@ -327,6 +377,8 @@ class LottoProAI {
     
     async displayModelResults(models, userNumbers) {
         const container = document.getElementById('modelResults');
+        if (!container) return;
+        
         container.innerHTML = '';
         
         const modelOrder = [
@@ -473,14 +525,21 @@ class LottoProAI {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
     
+    // 개선된 토스트 알림
     showToast(message, type = 'info') {
-        // 간단한 토스트 알림
+        // 기존 토스트 제거
+        const existingToasts = document.querySelectorAll('.custom-toast');
+        existingToasts.forEach(toast => toast.remove());
+        
         const toast = document.createElement('div');
-        toast.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show position-fixed`;
-        toast.style.cssText = 'top: 100px; right: 20px; z-index: 9999; max-width: 350px;';
+        toast.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show position-fixed custom-toast`;
+        toast.style.cssText = 'top: 100px; right: 20px; z-index: 9999; max-width: 350px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);';
         toast.innerHTML = `
-            ${message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <div class="d-flex align-items-center">
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+                <span>${message}</span>
+            </div>
+            <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
         `;
         
         document.body.appendChild(toast);
@@ -488,7 +547,12 @@ class LottoProAI {
         // 자동 제거
         setTimeout(() => {
             if (toast.parentNode) {
-                toast.parentNode.removeChild(toast);
+                toast.style.opacity = '0';
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
+                }, 300);
             }
         }, 5000);
     }
@@ -564,7 +628,9 @@ class LottoProAI {
             });
         }, observerOptions);
         
-        counters.forEach(counter => observer.observe(counter));
+        counters.forEach(counter => {
+            if (counter) observer.observe(counter);
+        });
     }
     
     animateCounter(element) {
@@ -602,7 +668,9 @@ class LottoProAI {
             });
         }, observerOptions);
         
-        animatedElements.forEach(element => observer.observe(element));
+        animatedElements.forEach(element => {
+            if (element) observer.observe(element);
+        });
     }
     
     initializeShareFeatures() {
@@ -665,6 +733,12 @@ const additionalCSS = `
 .animate-fade-in-right {
     animation: fadeInRight 0.6s ease-out forwards;
 }
+
+.custom-toast {
+    font-size: 14px;
+    border: none;
+    border-radius: 8px;
+}
 `;
 
 // 전역 인스턴스 생성
@@ -672,7 +746,12 @@ let lottoPro;
 
 // DOM 로드 완료 시 앱 초기화
 document.addEventListener('DOMContentLoaded', function() {
-    lottoPro = new LottoProAI();
+    try {
+        lottoPro = new LottoProAI();
+        console.log('LottoPro AI 앱이 성공적으로 초기화되었습니다.');
+    } catch (error) {
+        console.error('앱 초기화 실패:', error);
+    }
 });
 
 // 서비스 워커 등록 (PWA 지원)
