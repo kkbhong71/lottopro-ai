@@ -1,10 +1,12 @@
-// LottoPro AI Advanced JavaScript Application (개선된 버전)
+// LottoPro AI Advanced JavaScript Application (실시간 예시번호 기능 추가)
 
 class LottoProAI {
     constructor() {
         this.isLoading = false;
         this.currentPrediction = null;
         this.animationTimeouts = [];
+        this.exampleUpdateInterval = null;  // 실시간 예시번호 업데이트 인터벌
+        this.isUpdatingExample = false;     // 예시번호 업데이트 중 플래그
         
         this.init();
     }
@@ -62,6 +64,196 @@ class LottoProAI {
             console.error('통계 로드 실패:', error);
         }
     }
+
+    // ===== 실시간 예시번호 기능 =====
+    
+    initializeHeroExampleNumbers() {
+        /**
+         * 히어로 섹션 실시간 예시번호 시스템 초기화
+         */
+        console.log('실시간 예시번호 시스템 초기화');
+        
+        // 즉시 첫 예시번호 생성
+        this.updateHeroExampleNumbers();
+        
+        // 30초마다 자동 업데이트
+        this.exampleUpdateInterval = setInterval(() => {
+            this.updateHeroExampleNumbers();
+        }, 30000);
+        
+        // 예시번호 클릭 시 수동 업데이트
+        this.attachExampleClickEvent();
+    }
+
+    async updateHeroExampleNumbers() {
+        /**
+         * 히어로 섹션 예시번호 업데이트
+         */
+        try {
+            console.log('예시번호 업데이트 시작');
+            
+            const response = await fetch('/api/example-numbers');
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            if (data.success && data.example_numbers) {
+                this.displayHeroExampleNumbers(data.example_numbers, data.analysis);
+                console.log('예시번호 업데이트 완료:', data.example_numbers);
+            } else {
+                throw new Error(data.error || '예시번호 생성 실패');
+            }
+            
+        } catch (error) {
+            console.log('예시번호 업데이트 실패, 클라이언트 생성 사용:', error);
+            // 서버 실패 시 클라이언트에서 생성
+            this.generateClientSideExample();
+        }
+    }
+
+    generateClientSideExample() {
+        /**
+         * 클라이언트에서 예시번호 생성 (서버 실패 시 대안)
+         */
+        try {
+            const numbers = [];
+            
+            // 고품질 예시 번호 생성
+            const hotNumbers = [7, 13, 22, 31, 42, 1, 14, 25, 33, 43];
+            
+            // 2-3개는 핫넘버에서, 나머지는 랜덤
+            for (let i = 0; i < 3; i++) {
+                if (Math.random() < 0.8 && hotNumbers.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * hotNumbers.length);
+                    const selected = hotNumbers[randomIndex];
+                    if (!numbers.includes(selected)) {
+                        numbers.push(selected);
+                        hotNumbers.splice(randomIndex, 1);
+                    }
+                }
+            }
+            
+            // 나머지 번호 랜덤 생성
+            while (numbers.length < 6) {
+                const randomNum = Math.floor(Math.random() * 45) + 1;
+                if (!numbers.includes(randomNum)) {
+                    numbers.push(randomNum);
+                }
+            }
+            
+            const sortedNumbers = numbers.sort((a, b) => a - b);
+            
+            // 분석 정보 생성
+            const analysis = {
+                sum: sortedNumbers.reduce((a, b) => a + b, 0),
+                even_count: sortedNumbers.filter(n => n % 2 === 0).length,
+                odd_count: sortedNumbers.filter(n => n % 2 !== 0).length
+            };
+            
+            this.displayHeroExampleNumbers(sortedNumbers, analysis);
+            console.log('클라이언트 예시번호 생성 완료:', sortedNumbers);
+            
+        } catch (error) {
+            console.error('클라이언트 예시번호 생성 실패:', error);
+        }
+    }
+
+    displayHeroExampleNumbers(numbers, analysis = null) {
+        /**
+         * 히어로 섹션에 예시번호 표시
+         */
+        const container = document.getElementById('heroExampleNumbers');
+        if (!container) return;
+        
+        // 기존 볼들을 페이드아웃
+        const existingBalls = container.querySelectorAll('.lotto-ball');
+        existingBalls.forEach((ball, index) => {
+            setTimeout(() => {
+                ball.style.transform = 'scale(0) rotateY(180deg)';
+                ball.style.opacity = '0';
+            }, index * 100);
+        });
+        
+        // 새 번호들을 생성하고 페이드인
+        setTimeout(() => {
+            container.innerHTML = '';
+            
+            numbers.forEach((number, index) => {
+                const ball = document.createElement('div');
+                ball.className = `lotto-ball ${this.getNumberColorClass(number)} example-ball`;
+                ball.textContent = number;
+                ball.style.transform = 'scale(0) rotateY(-180deg)';
+                ball.style.opacity = '0';
+                ball.style.cursor = 'pointer';
+                ball.title = '클릭하면 새로운 예시번호가 생성됩니다';
+                
+                container.appendChild(ball);
+                
+                // 순차적 애니메이션
+                setTimeout(() => {
+                    ball.style.transition = 'all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+                    ball.style.transform = 'scale(1) rotateY(0deg)';
+                    ball.style.opacity = '1';
+                }, index * 150 + 200);
+            });
+            
+            // 분석 정보 업데이트
+            this.updateExampleAnalysis(numbers, analysis);
+            
+        }, 600);
+    }
+
+    updateExampleAnalysis(numbers, analysis) {
+        /**
+         * 예시번호 분석 정보 업데이트
+         */
+        const infoContainer = document.getElementById('exampleInfo');
+        if (infoContainer && analysis) {
+            const infoHTML = `
+                <small class="text-light opacity-75">
+                    합계: ${analysis.sum} | 
+                    짝수: ${analysis.even_count}개 | 
+                    홀수: ${analysis.odd_count}개 | 
+                    <span class="text-warning">✨ 실시간 AI 분석</span>
+                </small>
+            `;
+            infoContainer.innerHTML = infoHTML;
+            
+            // 애니메이션 효과
+            infoContainer.style.opacity = '0';
+            setTimeout(() => {
+                infoContainer.style.transition = 'opacity 0.5s ease';
+                infoContainer.style.opacity = '1';
+            }, 800);
+        }
+    }
+
+    attachExampleClickEvent() {
+        /**
+         * 예시번호 클릭 이벤트 연결
+         */
+        document.addEventListener('click', (event) => {
+            if (event.target.classList.contains('example-ball')) {
+                // 연속 클릭 방지
+                if (this.isUpdatingExample) return;
+                
+                this.isUpdatingExample = true;
+                this.updateHeroExampleNumbers();
+                
+                // 사용자 피드백
+                this.showToast('새로운 AI 예시번호가 생성되었습니다! 🎯', 'info');
+                
+                // 1초 후 다시 클릭 허용
+                setTimeout(() => {
+                    this.isUpdatingExample = false;
+                }, 1000);
+            }
+        });
+    }
+
+    // ===== 기존 기능들 =====
     
     validateNumberInput(event) {
         const input = event.target;
@@ -713,6 +905,16 @@ class LottoProAI {
             heroSection.appendChild(particle);
         }
     }
+
+    // 클래스 소멸자에서 인터벌 정리
+    destroy() {
+        if (this.exampleUpdateInterval) {
+            clearInterval(this.exampleUpdateInterval);
+        }
+        
+        // 기존 애니메이션 타임아웃 정리
+        this.animationTimeouts.forEach(timeout => clearTimeout(timeout));
+    }
 }
 
 // CSS 애니메이션 추가 (style.css에 추가할 내용)
@@ -739,6 +941,15 @@ const additionalCSS = `
     border: none;
     border-radius: 8px;
 }
+
+.example-ball {
+    transition: transform 0.3s ease;
+}
+
+.example-ball:hover {
+    transform: scale(1.1) !important;
+    cursor: pointer;
+}
 `;
 
 // 전역 인스턴스 생성
@@ -749,6 +960,14 @@ document.addEventListener('DOMContentLoaded', function() {
     try {
         lottoPro = new LottoProAI();
         console.log('LottoPro AI 앱이 성공적으로 초기화되었습니다.');
+        
+        // 실시간 예시번호 시스템 초기화 (약간의 지연 후)
+        setTimeout(() => {
+            if (lottoPro && lottoPro.initializeHeroExampleNumbers) {
+                lottoPro.initializeHeroExampleNumbers();
+            }
+        }, 1000);
+        
     } catch (error) {
         console.error('앱 초기화 실패:', error);
     }
