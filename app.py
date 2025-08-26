@@ -40,7 +40,7 @@ def load_csv_data_ultra_safe():
         return None
     
     try:
-        csv_path = 'new_1185.csv'
+        csv_path = 'new_1186.csv'
         
         if not os.path.exists(csv_path):
             safe_log(f"CSV 파일 없음: {csv_path}")
@@ -345,7 +345,7 @@ def health_check():
             'csv_loaded': csv_dataframe is not None,
             'sample_data_count': len(sample_data) if sample_data else 0,
             'current_directory': os.getcwd(),
-            'csv_file_exists': os.path.exists('new_1185.csv')
+            'csv_file_exists': os.path.exists('new_1186.csv')
         }
         
         if csv_dataframe is not None:
