@@ -40,7 +40,7 @@ def load_csv_data_ultra_safe():
         return None
     
     try:
-        csv_path = 'new_1186.csv'
+        csv_path = 'new_1187.csv'
         
         if not os.path.exists(csv_path):
             safe_log(f"CSV 파일 없음: {csv_path}")
