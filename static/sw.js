@@ -1,18 +1,20 @@
-// LottoPro AI v2.0 Service Worker
+// LottoPro AI v2.0 Service Worker (최신 CDN 링크 반영)
 // PWA 오프라인 지원 및 캐싱 전략
 
-const CACHE_NAME = 'lottopro-ai-v2-0-1';
-const API_CACHE_NAME = 'lottopro-api-v2-0-1';
+const CACHE_NAME = 'lottopro-ai-v2-0-2';  // 버전 업데이트
+const API_CACHE_NAME = 'lottopro-api-v2-0-2';
 
-// 캐싱할 정적 리소스들
+// 캐싱할 정적 리소스들 (최신 CDN 링크로 업데이트)
 const STATIC_RESOURCES = [
   '/',
   '/static/css/style.css',
   '/static/js/app.js',
   '/static/manifest.json',
-  'https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css',
-  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
-  'https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js'
+  // 업데이트된 Bootstrap 5.3.2 (JSDelivr)
+  'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css',
+  'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js',
+  // 업데이트된 Font Awesome 6.5.1 (CDNJS)
+  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css'
 ];
 
 // API 엔드포인트들 (캐싱 전략 적용)
@@ -24,12 +26,12 @@ const API_ENDPOINTS = [
 
 // 설치 이벤트 - 정적 리소스 캐싱
 self.addEventListener('install', event => {
-  console.log('[SW] 서비스 워커 설치 중...');
+  console.log('[SW] 서비스 워커 설치 중... (v2.0.2)');
   
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('[SW] 정적 리소스 캐싱 시작');
+        console.log('[SW] 정적 리소스 캐싱 시작 (최신 CDN 포함)');
         return cache.addAll(STATIC_RESOURCES);
       })
       .then(() => {
@@ -45,7 +47,7 @@ self.addEventListener('install', event => {
 
 // 활성화 이벤트 - 이전 캐시 정리
 self.addEventListener('activate', event => {
-  console.log('[SW] 서비스 워커 활성화 중...');
+  console.log('[SW] 서비스 워커 활성화 중... (v2.0.2)');
   
   event.waitUntil(
     Promise.all([
@@ -73,8 +75,8 @@ self.addEventListener('fetch', event => {
   
   // 동일 출처 요청만 처리
   if (url.origin !== location.origin) {
-    // CDN 리소스 처리
-    if (url.hostname === 'cdnjs.cloudflare.com') {
+    // CDN 리소스 처리 (JSDelivr 및 CDNJS)
+    if (url.hostname === 'cdn.jsdelivr.net' || url.hostname === 'cdnjs.cloudflare.com') {
       event.respondWith(handleCDNRequest(request));
     }
     return;
@@ -95,15 +97,18 @@ async function handleCDNRequest(request) {
   try {
     const cachedResponse = await caches.match(request);
     if (cachedResponse) {
+      console.log('[SW] CDN 캐시 히트:', request.url);
       return cachedResponse;
     }
     
+    console.log('[SW] CDN 네트워크 요청:', request.url);
     const networkResponse = await fetch(request);
     
     // 성공적인 응답만 캐싱
     if (networkResponse.ok) {
       const cache = await caches.open(CACHE_NAME);
       cache.put(request, networkResponse.clone());
+      console.log('[SW] CDN 리소스 캐싱 완료:', request.url);
     }
     
     return networkResponse;
@@ -290,6 +295,13 @@ function getOfflinePage() {
                 margin-bottom: 0.8rem;
                 font-size: 0.95rem;
             }
+            .version {
+                position: absolute;
+                bottom: 20px;
+                right: 20px;
+                font-size: 0.8rem;
+                opacity: 0.7;
+            }
         </style>
     </head>
     <body>
@@ -318,9 +330,14 @@ function getOfflinePage() {
             </div>
         </div>
         
+        <div class="version">
+            SW v2.0.2 | CSP 호환
+        </div>
+        
         <script>
             // 온라인 상태 감지
             window.addEventListener('online', function() {
+                console.log('온라인 상태 복구됨');
                 window.location.reload();
             });
             
@@ -332,6 +349,8 @@ function getOfflinePage() {
                     }, 1000);
                 }
             });
+            
+            console.log('LottoPro AI 오프라인 페이지 로드됨');
         </script>
     </body>
     </html>
@@ -427,4 +446,4 @@ self.addEventListener('message', event => {
   }
 });
 
-console.log('[SW] LottoPro AI v2.0 Service Worker 로드 완료');
+console.log('[SW] LottoPro AI v2.0.2 Service Worker 로드 완료 (CSP 호환, 최신 CDN)');
