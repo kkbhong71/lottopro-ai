@@ -60,7 +60,7 @@ def load_csv_data_ultra_safe():
         return None
 
 def convert_csv_ultra_safe(df):
-    """CSV를 표준 형식으로 변환"""
+    """CSV를 표준 형식으로 변환 (draw date 활용 개선)"""
     if df is None:
         return []
     
@@ -70,16 +70,17 @@ def convert_csv_ultra_safe(df):
         
         for index, row in df.iterrows():
             try:
-                # CSV 컬럼명에 맞게 수정 (실제 new_1188.csv 구조에 맞춰야 함)
+                # 실제 new_1188.csv 구조에 맞춘 완벽한 매핑
                 data_row = {
-                    '회차': int(row.get('round', row.get('회차', index + 1))),
-                    '당첨번호1': int(row.get('num1', row.get('당첨번호1', 1))),
-                    '당첨번호2': int(row.get('num2', row.get('당첨번호2', 2))),
-                    '당첨번호3': int(row.get('num3', row.get('당첨번호3', 3))),
-                    '당첨번호4': int(row.get('num4', row.get('당첨번호4', 4))),
-                    '당첨번호5': int(row.get('num5', row.get('당첨번호5', 5))),
-                    '당첨번호6': int(row.get('num6', row.get('당첨번호6', 6))),
-                    '보너스번호': int(row.get('bonus num', row.get('보너스번호', 7)))
+                    '회차': int(row.get('round', index + 1)),
+                    '추첨일': str(row.get('draw date', '')),
+                    '당첨번호1': int(row.get('num1', 1)),
+                    '당첨번호2': int(row.get('num2', 2)),
+                    '당첨번호3': int(row.get('num3', 3)),
+                    '당첨번호4': int(row.get('num4', 4)),
+                    '당첨번호5': int(row.get('num5', 5)),
+                    '당첨번호6': int(row.get('num6', 6)),
+                    '보너스번호': int(row.get('bonus num', 7))
                 }
                 sample_data.append(data_row)
             except Exception as e:
