@@ -136,6 +136,9 @@ celerybeat.pid
 
 # Environments
 .env
+.env.local
+.env.production
+.env.development
 .envrc
 .venv
 env/
@@ -205,3 +208,87 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# ====== LottoPro AI v2.0 Specific ======
+
+# Temporary files
+*.tmp
+*.temp
+temp/
+tmp/
+
+# Backup files
+*.bak
+*.backup
+*~
+*.swp
+*.swo
+
+# OS-specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Security & API keys
+secrets.txt
+api_keys.txt
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Development/Debug files
+debug.log
+error.log
+access.log
+*.debug
+
+# Local development overrides
+config.local.py
+settings.local.py
+local_settings.py
+
+# Render.com deployment files (if needed)
+# render.yaml
+
+# Data files that shouldn't be committed (except our main CSV)
+# Note: new_1188.csv should be committed as it's our main data source
+data/
+*.csv
+*.xlsx
+*.json
+# But allow our main data file
+!new_1188.csv
+
+# ML/AI model files (if we add them later)
+*.model
+*.pkl
+*.pickle
+models/
+checkpoints/
+
+# Performance/Monitoring
+*.prof
+*.profile
+
+# Cache directories
+.cache/
+cache/
+.pytest_cache/
+.mypy_cache/
+
+# Node.js (if we add any frontend build tools)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs
+build/
+dist/
+*.egg-info/
