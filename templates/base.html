@@ -3,49 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}LottoPro AI v1.0 FREE{% endblock %}</title>
+    
+    <!-- SEO Meta Tags -->
+    <title>{% block title %}LottoPro AI v2.0 - 실제 데이터 분석 기반 로또 예측 서비스{% endblock %}</title>
+    <meta name="description" content="1,188회차 실제 당첨 데이터를 분석하는 5가지 AI 모델로 로또 예상번호를 무료 제공. 빈도분석, 트렌드분석, 패턴분석 기반 고품질 예측.">
+    <meta name="keywords" content="로또 예측, AI 로또, 당첨번호 분석, 로또 통계, 무료 로또 예측, 실제 데이터 분석">
+    <meta name="author" content="LottoPro AI Team">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="LottoPro AI v2.0 - 실제 데이터 분석 기반 로또 예측">
+    <meta property="og:description" content="5가지 AI 모델이 1,188회차 실제 당첨 데이터를 분석하여 최적의 로또 예상번호를 추천합니다.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.url }}">
+    <meta property="og:image" content="{{ url_for('static', filename='images/og-image.png', _external=True) }}">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="LottoPro AI v2.0 - 실제 데이터 분석 기반 로또 예측">
+    <meta name="twitter:description" content="AI가 분석한 로또 예상번호를 무료로 제공합니다.">
+    
+    <!-- Performance & Security -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="theme-color" content="#0d6efd">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" as="style">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style">
     
     <!-- Bootstrap 5 -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     
     <!-- Font Awesome -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" crossorigin="anonymous">
     
     <!-- Custom CSS -->
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
     
     <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎯</text></svg>">
+    
+    <!-- Additional Block for Page-specific Head Content -->
+    {% block head %}{% endblock %}
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-gradient-primary fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-gradient-primary fixed-top shadow">
         <div class="container">
-            <a class="navbar-brand fw-bold" href="/">
+            <a class="navbar-brand fw-bold" href="/" title="LottoPro AI 홈페이지">
                 <i class="fas fa-bullseye me-2"></i>
-                LottoPro AI v1.0
+                LottoPro AI v2.0
                 <span class="badge bg-warning text-dark ms-2">FREE</span>
+                <span class="badge bg-success text-white ms-1">
+                    <i class="fas fa-database me-1"></i>실데이터
+                </span>
             </a>
             
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="메뉴 토글">
                 <span class="navbar-toggler-icon"></span>
             </button>
             
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="#features">
+                        <a class="nav-link" href="#features" title="AI 모델 소개">
                             <i class="fas fa-robot me-1"></i>AI 모델
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#stats">
+                        <a class="nav-link" href="#prediction" title="번호 예측하기">
+                            <i class="fas fa-magic me-1"></i>예측하기
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#stats" title="통계 분석">
                             <i class="fas fa-chart-bar me-1"></i>통계
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#about">
+                        <a class="nav-link" href="#about" title="서비스 소개">
                             <i class="fas fa-info-circle me-1"></i>소개
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/api/health" target="_blank" title="서버 상태 확인">
+                            <i class="fas fa-heartbeat me-1"></i>상태
                         </a>
                     </li>
                 </ul>
@@ -53,41 +100,222 @@
         </div>
     </nav>
 
+    <!-- Server Status Banner (선택적 표시) -->
+    <div id="serverStatusBanner" class="alert alert-warning alert-dismissible fade show mb-0 rounded-0 d-none" role="alert" style="margin-top: 76px;">
+        <div class="container">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <span id="serverStatusMessage">서버 상태를 확인하고 있습니다...</span>
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="닫기"></button>
+            </div>
+        </div>
+    </div>
+
     <!-- Main Content -->
-    <main style="padding-top: 76px;">
+    <main style="padding-top: 76px;" role="main">
         {% block content %}{% endblock %}
     </main>
 
     <!-- Footer -->
     <footer class="bg-dark text-light py-4 mt-5">
-        <div class="container text-center">
+        <div class="container">
             <div class="row">
-                <div class="col-md-6">
-                    <h6 class="text-warning">🎯 LottoPro AI v1.0 FREE</h6>
-                    <p class="small mb-0">5가지 독자적인 AI 모델로 분석된 예상번호를 무료 제공</p>
+                <div class="col-md-8">
+                    <h6 class="text-warning mb-3">
+                        🎯 LottoPro AI v2.0 - 실제 데이터 분석
+                        <span class="badge bg-warning text-dark ms-2">FREE</span>
+                    </h6>
+                    <p class="small mb-2">
+                        <i class="fas fa-check-circle text-success me-1"></i>
+                        1,188회차 실제 당첨 데이터 분석
+                    </p>
+                    <p class="small mb-2">
+                        <i class="fas fa-check-circle text-success me-1"></i>
+                        5가지 독자적인 AI 모델 (빈도분석, 트렌드분석, 패턴분석, 통계분석, 머신러닝)
+                    </p>
+                    <p class="small mb-0">
+                        <i class="fas fa-check-circle text-success me-1"></i>
+                        완전 무료 서비스, 광고 없음
+                    </p>
                 </div>
-                <div class="col-md-6">
-                    <div class="d-flex justify-content-center gap-3">
-                        <a href="#" class="text-light"><i class="fab fa-github"></i></a>
-                        <a href="#" class="text-light"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="text-light"><i class="fas fa-envelope"></i></a>
+                <div class="col-md-4 text-md-end">
+                    <div class="mb-3">
+                        <h6 class="small text-light mb-2">팔로우하기</h6>
+                        <div class="d-flex justify-content-md-end justify-content-center gap-3">
+                            <a href="#" class="text-light" title="GitHub" aria-label="GitHub">
+                                <i class="fab fa-github fa-lg"></i>
+                            </a>
+                            <a href="#" class="text-light" title="Twitter" aria-label="Twitter">
+                                <i class="fab fa-twitter fa-lg"></i>
+                            </a>
+                            <a href="#" class="text-light" title="이메일 문의" aria-label="이메일">
+                                <i class="fas fa-envelope fa-lg"></i>
+                            </a>
+                        </div>
                     </div>
-                    <p class="small mt-2 mb-0">Made with ❤️ for lottery enthusiasts</p>
+                    
+                    <!-- 서버 정보 표시 -->
+                    <div class="server-info" id="footerServerInfo">
+                        <small class="text-muted">
+                            <i class="fas fa-server me-1"></i>
+                            <span id="footerDataSource">데이터 로딩 중...</span>
+                        </small>
+                    </div>
+                    
+                    <p class="small mt-2 mb-0 text-muted">
+                        Made with ❤️ for lottery enthusiasts
+                    </p>
                 </div>
             </div>
-            <hr class="my-3">
-            <p class="small text-muted mb-0">
-                ⚠️ 본 서비스는 예측 정보 제공 목적이며, 당첨을 보장하지 않습니다. 
-                책임감 있는 구매를 권장합니다.
-            </p>
+            
+            <hr class="my-3 opacity-25">
+            
+            <!-- 면책 조항 -->
+            <div class="row">
+                <div class="col-12">
+                    <p class="small text-muted mb-2 text-center">
+                        <i class="fas fa-exclamation-triangle text-warning me-1"></i>
+                        <strong>면책 조항:</strong> 본 서비스는 과거 데이터 분석을 통한 예측 정보 제공 목적이며, 
+                        당첨을 보장하지 않습니다. 책임감 있는 구매를 권장합니다.
+                    </p>
+                    <p class="small text-muted mb-0 text-center">
+                        <i class="fas fa-shield-alt text-info me-1"></i>
+                        개인정보 수집 없음 | 완전 무료 서비스 | 
+                        <span id="footerVersion">v2.0.0</span> | 
+                        <span id="footerLastUpdate">-</span>
+                    </p>
+                </div>
+            </div>
         </div>
     </footer>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <!-- Loading Overlay (전역 사용) -->
+    <div id="globalLoadingOverlay" class="position-fixed top-0 start-0 w-100 h-100 d-none" 
+         style="background: rgba(0,0,0,0.7); z-index: 9998;">
+        <div class="d-flex align-items-center justify-content-center h-100">
+            <div class="text-center text-white">
+                <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+                    <span class="visually-hidden">로딩 중...</span>
+                </div>
+                <h5>데이터를 분석하고 있습니다...</h5>
+                <p class="small">잠시만 기다려주세요</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS (Bundle includes Popper) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js" 
+            crossorigin="anonymous" integrity="sha512-VQfRG4ShMX4JbXJmYr7lzRkdMNqJQ7dLM8eK+YgwZOdJ5DZJf8Y0tfN2gXFLJSCuGh7V7cJXW/mPAfbKEK9fEg=="></script>
     
     <!-- Custom JS -->
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    
+    <!-- Global Base Scripts -->
+    <script>
+        // 전역 상태 관리
+        window.lottoProConfig = {
+            version: '2.0.0',
+            apiBaseUrl: '{{ request.url_root }}api',
+            debug: {{ 'true' if config.get('DEBUG') else 'false' }},
+            lastUpdate: new Date().toISOString()
+        };
+        
+        // 전역 유틸리티 함수들
+        window.lottoProUtils = {
+            // 서버 상태 확인
+            async checkServerHealth() {
+                try {
+                    const response = await fetch('/api/health');
+                    const health = await response.json();
+                    this.updateFooterInfo(health);
+                    return health;
+                } catch (error) {
+                    console.error('서버 상태 확인 실패:', error);
+                    this.showServerWarning('서버 연결에 문제가 있습니다.');
+                    return null;
+                }
+            },
+            
+            // 푸터 정보 업데이트
+            updateFooterInfo(health) {
+                const dataSourceEl = document.getElementById('footerDataSource');
+                const versionEl = document.getElementById('footerVersion');
+                const updateEl = document.getElementById('footerLastUpdate');
+                
+                if (dataSourceEl && health) {
+                    dataSourceEl.textContent = health.data_source || '데이터 로딩 중...';
+                }
+                
+                if (versionEl && health) {
+                    versionEl.textContent = health.version || 'v2.0.0';
+                }
+                
+                if (updateEl) {
+                    const now = new Date();
+                    updateEl.textContent = `업데이트: ${now.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}`;
+                }
+            },
+            
+            // 서버 경고 표시
+            showServerWarning(message) {
+                const banner = document.getElementById('serverStatusBanner');
+                const messageEl = document.getElementById('serverStatusMessage');
+                
+                if (banner && messageEl) {
+                    messageEl.textContent = message;
+                    banner.classList.remove('d-none');
+                    banner.classList.add('show');
+                }
+            },
+            
+            // 전역 로딩 표시/숨김
+            showGlobalLoading() {
+                const overlay = document.getElementById('globalLoadingOverlay');
+                if (overlay) overlay.classList.remove('d-none');
+            },
+            
+            hideGlobalLoading() {
+                const overlay = document.getElementById('globalLoadingOverlay');
+                if (overlay) overlay.classList.add('d-none');
+            }
+        };
+        
+        // 페이지 로드 시 기본 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            // 서버 상태 확인
+            window.lottoProUtils.checkServerHealth();
+            
+            // 5분마다 서버 상태 자동 확인
+            setInterval(() => {
+                window.lottoProUtils.checkServerHealth();
+            }, 5 * 60 * 1000);
+            
+            // 스무스 스크롤 설정
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+            
+            console.log('LottoPro AI Base v2.0 초기화 완료');
+        });
+        
+        // 페이지 가시성 변경 시 자동 체크
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                setTimeout(() => {
+                    window.lottoProUtils.checkServerHealth();
+                }, 1000);
+            }
+        });
+    </script>
     
     {% block scripts %}{% endblock %}
 </body>
