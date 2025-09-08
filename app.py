@@ -650,6 +650,24 @@ def health_check():
             'timestamp': datetime.now().isoformat()
         }), 500
 
+@app.route('/sw.js')
+def service_worker():
+    """서비스 워커 파일 제공"""
+    try:
+        return app.send_static_file('sw.js')
+    except Exception as e:
+        safe_log(f"서비스 워커 파일 제공 실패: {str(e)}")
+        return "Service Worker not found", 404
+
+@app.route('/manifest.json')
+def manifest():
+    """PWA 매니페스트 파일 제공"""
+    try:
+        return app.send_static_file('manifest.json')
+    except Exception as e:
+        safe_log(f"매니페스트 파일 제공 실패: {str(e)}")
+        return "Manifest not found", 404
+
 @app.errorhandler(404)
 def not_found(error):
     try:
