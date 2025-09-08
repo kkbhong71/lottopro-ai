@@ -12,9 +12,20 @@
                         <span class="text-warning">로또 당첨번호</span>
                     </h1>
                     <p class="lead text-white-50 mb-4">
-                        5가지 독자적인 AI 모델이 과거 데이터를 분석하여 
+                        실제 1,188회차 당첨 데이터를 분석하는 5가지 독자적 AI 모델이 
                         최적의 로또 예상번호를 추천해드립니다.
                     </p>
+                    
+                    <!-- 실시간 분석 상태 표시 -->
+                    <div class="analysis-status mb-4" id="analysisStatus">
+                        <div class="d-flex align-items-center text-success">
+                            <div class="spinner-border spinner-border-sm me-2" role="status" id="analysisSpinner">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <small id="analysisStatusText">데이터 분석 중...</small>
+                        </div>
+                    </div>
+                    
                     <div class="hero-stats row text-center mb-4">
                         <div class="col-4">
                             <div class="stat-item">
@@ -24,7 +35,7 @@
                         </div>
                         <div class="col-4">
                             <div class="stat-item">
-                                <h3 class="text-warning">1188</h3>
+                                <h3 class="text-warning" id="dataCountDisplay">1188</h3>
                                 <small class="text-white-50">분석 회차</small>
                             </div>
                         </div>
@@ -42,21 +53,37 @@
             </div>
             <div class="col-lg-6">
                 <div class="hero-animation text-center">
-                    <div class="lotto-ball-container" id="heroExampleNumbers">
-                        <!-- 실시간으로 업데이트되는 예시 번호들 -->
-                        <div class="lotto-ball lotto-ball-1">1</div>
-                        <div class="lotto-ball lotto-ball-2">7</div>
-                        <div class="lotto-ball lotto-ball-3">13</div>
-                        <div class="lotto-ball lotto-ball-4">25</div>
-                        <div class="lotto-ball lotto-ball-5">31</div>
-                        <div class="lotto-ball lotto-ball-6">42</div>
+                    <!-- 실시간 예시번호 컨테이너 -->
+                    <div class="example-numbers-container mb-3">
+                        <div class="lotto-ball-container" id="heroExampleNumbers">
+                            <!-- AI가 실시간으로 생성하는 예시 번호들 -->
+                            <div class="lotto-ball lotto-ball-1 example-ball" data-number="1">1</div>
+                            <div class="lotto-ball lotto-ball-2 example-ball" data-number="7">7</div>
+                            <div class="lotto-ball lotto-ball-3 example-ball" data-number="13">13</div>
+                            <div class="lotto-ball lotto-ball-4 example-ball" data-number="25">25</div>
+                            <div class="lotto-ball lotto-ball-5 example-ball" data-number="31">31</div>
+                            <div class="lotto-ball lotto-ball-6 example-ball" data-number="42">42</div>
+                        </div>
+                        
+                        <!-- 예시번호 새로고침 버튼 -->
+                        <div class="text-center mt-2">
+                            <button class="btn btn-sm btn-outline-light" id="refreshExampleBtn" title="새로운 예시번호 생성">
+                                <i class="fas fa-sync-alt me-1"></i> 새로운 예시
+                            </button>
+                        </div>
                     </div>
-                    <p class="text-white-50 mt-3" id="exampleDescription">
-                        AI가 분석한 예상번호 예시
-                        <br><small class="text-warning">✨ 30초마다 실시간 업데이트</small>
-                    </p>
-                    <div class="example-info mt-2" id="exampleInfo">
-                        <!-- 예시 번호 분석 정보가 표시될 영역 -->
+                    
+                    <div class="example-description" id="exampleDescription">
+                        AI가 분석한 예상번호 예시<br>
+                        <small class="text-success">📊 데이터 로딩 중...</small><br>
+                        <small class="text-warning">✨ 30초마다 실시간 업데이트</small>
+                    </div>
+                    
+                    <!-- 예시번호 분석 정보 -->
+                    <div class="example-info mt-3" id="exampleInfo">
+                        <small class="text-light opacity-75">
+                            분석 정보 로딩 중...
+                        </small>
                     </div>
                 </div>
             </div>
@@ -69,7 +96,29 @@
     <div class="container">
         <div class="text-center mb-5">
             <h2 class="display-5 fw-bold">🤖 5가지 AI 예측 모델</h2>
-            <p class="lead text-muted">각기 다른 방식으로 분석하여 최적의 예측을 제공합니다</p>
+            <p class="lead text-muted">실제 당첨 데이터를 각기 다른 방식으로 분석하여 최적의 예측을 제공합니다</p>
+            
+            <!-- 데이터 분석 상태 표시 -->
+            <div class="analysis-indicators mt-4" id="featureAnalysisStatus">
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <div class="d-flex justify-content-around">
+                            <div class="analysis-indicator" id="frequencyIndicator">
+                                <i class="fas fa-chart-bar text-muted"></i>
+                                <small class="d-block">빈도분석</small>
+                            </div>
+                            <div class="analysis-indicator" id="trendIndicator">
+                                <i class="fas fa-trending-up text-muted"></i>
+                                <small class="d-block">트렌드분석</small>
+                            </div>
+                            <div class="analysis-indicator" id="patternIndicator">
+                                <i class="fas fa-project-diagram text-muted"></i>
+                                <small class="d-block">패턴분석</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         
         <div class="row g-4">
@@ -79,7 +128,10 @@
                         <i class="fas fa-chart-bar"></i>
                     </div>
                     <h5>빈도분석 모델</h5>
-                    <p class="text-muted">과거 당첨번호 출현 빈도를 분석하여 가중 확률로 예측</p>
+                    <p class="text-muted">1,188회차 당첨번호 출현 빈도를 분석하여 가중 확률로 예측</p>
+                    <div class="feature-status" id="frequencyStatus">
+                        <small class="text-muted">분석 대기 중...</small>
+                    </div>
                 </div>
             </div>
             
@@ -89,7 +141,10 @@
                         <i class="fas fa-trending-up"></i>
                     </div>
                     <h5>트렌드분석 모델</h5>
-                    <p class="text-muted">최근 당첨 패턴과 트렌드를 분석하여 시기별 변화 반영</p>
+                    <p class="text-muted">최근 50회차 당첨 패턴과 트렌드를 분석하여 시기별 변화 반영</p>
+                    <div class="feature-status" id="trendStatus">
+                        <small class="text-muted">분석 대기 중...</small>
+                    </div>
                 </div>
             </div>
             
@@ -100,6 +155,9 @@
                     </div>
                     <h5>패턴분석 모델</h5>
                     <p class="text-muted">번호 조합 패턴과 수학적 관계를 분석하여 복합 예측</p>
+                    <div class="feature-status" id="patternStatus">
+                        <small class="text-muted">분석 대기 중...</small>
+                    </div>
                 </div>
             </div>
             
@@ -110,6 +168,9 @@
                     </div>
                     <h5>통계분석 모델</h5>
                     <p class="text-muted">고급 통계 기법과 확률 이론을 적용한 수학적 예측</p>
+                    <div class="feature-status">
+                        <small class="text-success">✅ 준비 완료</small>
+                    </div>
                 </div>
             </div>
             
@@ -120,6 +181,9 @@
                     </div>
                     <h5>머신러닝 모델</h5>
                     <p class="text-muted">딥러닝 신경망과 AI 알고리즘 기반 고도화된 예측</p>
+                    <div class="feature-status">
+                        <small class="text-success">✅ 준비 완료</small>
+                    </div>
                 </div>
             </div>
             
@@ -130,6 +194,9 @@
                     </div>
                     <h5>종합추천 시스템</h5>
                     <p class="text-muted">5가지 모델 결과를 종합하여 최고의 추천번호 선별</p>
+                    <div class="feature-status">
+                        <small class="text-warning">⏳ 분석 완료 후 활성화</small>
+                    </div>
                 </div>
             </div>
         </div>
@@ -145,6 +212,14 @@
                     <div class="text-center mb-5">
                         <h2 class="display-5 fw-bold">🎲 AI 예상번호 생성</h2>
                         <p class="lead text-muted">원하는 번호가 있다면 입력하세요. AI가 나머지를 추천해드립니다!</p>
+                        
+                        <!-- 데이터 소스 정보 -->
+                        <div class="data-source-display mt-3" id="predictionDataSource">
+                            <div class="alert alert-info d-inline-flex align-items-center">
+                                <i class="fas fa-database me-2"></i>
+                                <span id="dataSourceText">데이터 로딩 중...</span>
+                            </div>
+                        </div>
                     </div>
                     
                     <!-- User Input Section -->
@@ -180,11 +255,19 @@
                                 </div>
                                 
                                 <div class="text-center">
-                                    <button type="submit" class="btn btn-gradient-primary btn-lg px-5 py-3 rounded-pill">
+                                    <button type="submit" class="btn btn-gradient-primary btn-lg px-5 py-3 rounded-pill" id="predictBtn">
                                         <i class="fas fa-magic me-2"></i>
                                         <span class="btn-text">AI 예상번호 생성하기</span>
                                         <div class="spinner-border spinner-border-sm ms-2 d-none" role="status"></div>
                                     </button>
+                                    
+                                    <!-- 분석 상태 경고 -->
+                                    <div class="mt-2" id="predictionWarning" style="display: none;">
+                                        <small class="text-warning">
+                                            <i class="fas fa-exclamation-triangle me-1"></i>
+                                            일부 분석이 진행 중입니다. 기본 예측으로 진행됩니다.
+                                        </small>
+                                    </div>
                                 </div>
                             </form>
                         </div>
@@ -197,8 +280,14 @@
                             <div class="spinner-grow text-success" role="status"></div>
                             <div class="spinner-grow text-warning" role="status"></div>
                         </div>
-                        <h4 class="mt-3">AI 모델이 데이터를 분석하고 있습니다...</h4>
+                        <h4 class="mt-3">AI 모델이 실제 데이터를 분석하고 있습니다...</h4>
                         <p class="text-muted">잠시만 기다려주세요. 최적의 번호를 찾고 있어요! 🤖</p>
+                        
+                        <!-- 로딩 진행 표시 -->
+                        <div class="progress mt-3" style="max-width: 400px; margin: 0 auto;">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                 role="progressbar" style="width: 0%" id="loadingProgress"></div>
+                        </div>
                     </div>
                     
                     <!-- Results Section -->
@@ -242,18 +331,31 @@
     <div class="container">
         <div class="text-center mb-5">
             <h2 class="display-5 fw-bold">📊 실시간 통계 분석</h2>
-            <p class="lead text-muted">과거 당첨 데이터를 기반으로 한 실시간 분석 결과</p>
+            <p class="lead text-muted">실제 당첨 데이터를 기반으로 한 실시간 분석 결과</p>
+            
+            <!-- 통계 데이터 소스 표시 -->
+            <div class="stats-source mt-3" id="statsSource">
+                <small class="text-muted">데이터 로딩 중...</small>
+            </div>
         </div>
         
         <div class="row g-4">
             <div class="col-lg-6">
                 <div class="card shadow border-0 h-100">
                     <div class="card-header bg-danger text-white">
-                        <h6 class="mb-0"><i class="fas fa-fire me-2"></i>핫 넘버 (자주 나오는 번호)</h6>
+                        <h6 class="mb-0">
+                            <i class="fas fa-fire me-2"></i>핫 넘버 (자주 나오는 번호)
+                        </h6>
                     </div>
                     <div class="card-body">
                         <div id="hotNumbers" class="number-display">
-                            <!-- Dynamic content -->
+                            <!-- Loading placeholder -->
+                            <div class="text-center py-3">
+                                <div class="spinner-border text-danger" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <p class="mt-2 text-muted">핫넘버 분석 중...</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -262,11 +364,47 @@
             <div class="col-lg-6">
                 <div class="card shadow border-0 h-100">
                     <div class="card-header bg-primary text-white">
-                        <h6 class="mb-0"><i class="fas fa-snowflake me-2"></i>콜드 넘버 (잘 안 나오는 번호)</h6>
+                        <h6 class="mb-0">
+                            <i class="fas fa-snowflake me-2"></i>콜드 넘버 (잘 안 나오는 번호)
+                        </h6>
                     </div>
                     <div class="card-body">
                         <div id="coldNumbers" class="number-display">
-                            <!-- Dynamic content -->
+                            <!-- Loading placeholder -->
+                            <div class="text-center py-3">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <p class="mt-2 text-muted">콜드넘버 분석 중...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 통계 요약 정보 -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card shadow border-0">
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-md-3">
+                                <h4 class="text-primary" id="totalDraws">-</h4>
+                                <small class="text-muted">총 분석 회차</small>
+                            </div>
+                            <div class="col-md-3">
+                                <h4 class="text-success" id="dataQuality">-</h4>
+                                <small class="text-muted">데이터 품질</small>
+                            </div>
+                            <div class="col-md-3">
+                                <h4 class="text-warning" id="analysisModels">5</h4>
+                                <small class="text-muted">분석 모델</small>
+                            </div>
+                            <div class="col-md-3">
+                                <h4 class="text-info" id="lastUpdate">-</h4>
+                                <small class="text-muted">마지막 업데이트</small>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -285,15 +423,15 @@
                     <div class="about-feature-item">
                         <i class="fas fa-check-circle text-success me-3"></i>
                         <div>
-                            <h6>100% 무료 서비스</h6>
-                            <p class="text-muted mb-0">고품질 AI 예측을 완전 무료로 제공합니다</p>
+                            <h6>실제 데이터 기반 분석</h6>
+                            <p class="text-muted mb-0">1,188회차 실제 당첨번호를 분석하여 현실적 예측 제공</p>
                         </div>
                     </div>
                     <div class="about-feature-item">
                         <i class="fas fa-check-circle text-success me-3"></i>
                         <div>
                             <h6>5가지 독자적 AI 모델</h6>
-                            <p class="text-muted mb-0">다양한 분석 방식으로 정확도를 높였습니다</p>
+                            <p class="text-muted mb-0">빈도, 트렌드, 패턴, 통계, 머신러닝 모델로 다각도 분석</p>
                         </div>
                     </div>
                     <div class="about-feature-item">
@@ -306,8 +444,8 @@
                     <div class="about-feature-item">
                         <i class="fas fa-check-circle text-success me-3"></i>
                         <div>
-                            <h6>실시간 데이터 분석</h6>
-                            <p class="text-muted mb-0">최신 당첨 패턴을 실시간으로 반영합니다</p>
+                            <h6>100% 무료 서비스</h6>
+                            <p class="text-muted mb-0">고품질 AI 예측을 완전 무료로 제공합니다</p>
                         </div>
                     </div>
                 </div>
@@ -318,32 +456,187 @@
                         <i class="fas fa-brain fa-8x text-primary opacity-75"></i>
                         <div class="brain-pulse"></div>
                     </div>
-                    <p class="mt-3 text-muted">AI가 24시간 데이터를 분석합니다</p>
+                    <p class="mt-3 text-muted">AI가 24시간 실제 데이터를 분석합니다</p>
                 </div>
             </div>
         </div>
     </div>
 </section>
+
+<!-- Error Modal -->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="errorModalLabel">
+                    <i class="fas fa-exclamation-triangle me-2"></i>오류 발생
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="errorModalMessage">오류가 발생했습니다.</p>
+                <div class="mt-3">
+                    <h6>해결 방법:</h6>
+                    <ul class="small">
+                        <li>페이지를 새로고침해보세요</li>
+                        <li>인터넷 연결을 확인해주세요</li>
+                        <li>잠시 후 다시 시도해주세요</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                <button type="button" class="btn btn-primary" onclick="location.reload()">페이지 새로고침</button>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block scripts %}
 <script>
-// 페이지 로드 시 통계 데이터 로드
+// 페이지 로드 시 초기화 함수들
 document.addEventListener('DOMContentLoaded', function() {
-    loadStatistics();
-    
-    // 실시간 예시번호 시스템 초기화
-    if (window.lottoPro) {
-        window.lottoPro.initializeHeroExampleNumbers();
-    } else {
-        // lottoPro가 아직 초기화되지 않았다면 지연 초기화
-        setTimeout(() => {
-            if (window.lottoPro) {
-                window.lottoPro.initializeHeroExampleNumbers();
-            }
-        }, 1000);
-    }
+    initializePage();
 });
+
+async function initializePage() {
+    try {
+        // 통계 데이터 로드
+        await loadStatistics();
+        
+        // 서버 상태 확인
+        await checkServerStatus();
+        
+        // 예시번호 새로고침 버튼 이벤트
+        const refreshBtn = document.getElementById('refreshExampleBtn');
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', function() {
+                if (window.lottoPro && window.lottoPro.updateHeroExampleNumbers) {
+                    window.lottoPro.updateHeroExampleNumbers();
+                }
+            });
+        }
+        
+        console.log('페이지 초기화 완료');
+    } catch (error) {
+        console.error('페이지 초기화 실패:', error);
+        showErrorMessage('페이지 초기화에 실패했습니다.');
+    }
+}
+
+async function checkServerStatus() {
+    try {
+        const response = await fetch('/api/health');
+        const health = await response.json();
+        
+        // 데이터 카운트 업데이트
+        const dataCountDisplay = document.getElementById('dataCountDisplay');
+        if (dataCountDisplay && health.sample_data_count) {
+            dataCountDisplay.textContent = health.sample_data_count;
+        }
+        
+        // 분석 상태 업데이트
+        if (health.analysis_status) {
+            updateAnalysisStatus(health.analysis_status);
+        }
+        
+        // 데이터 소스 정보 업데이트
+        const dataSourceText = document.getElementById('dataSourceText');
+        if (dataSourceText) {
+            dataSourceText.textContent = health.data_source || '데이터 로딩 중...';
+        }
+        
+        // 마지막 업데이트 시간
+        const lastUpdate = document.getElementById('lastUpdate');
+        if (lastUpdate) {
+            const now = new Date();
+            lastUpdate.textContent = now.toLocaleTimeString('ko-KR', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+        }
+        
+        // 데이터 품질 표시
+        const dataQuality = document.getElementById('dataQuality');
+        if (dataQuality) {
+            dataQuality.textContent = health.csv_loaded ? '실제 데이터' : '샘플 데이터';
+            dataQuality.className = health.csv_loaded ? 'text-success' : 'text-warning';
+        }
+        
+    } catch (error) {
+        console.error('서버 상태 확인 실패:', error);
+        updateAnalysisStatus({
+            frequency_analysis: false,
+            trend_analysis: false,
+            pattern_analysis: false
+        });
+    }
+}
+
+function updateAnalysisStatus(analysisStatus) {
+    // 히어로 섹션 분석 상태
+    const statusSpinner = document.getElementById('analysisSpinner');
+    const statusText = document.getElementById('analysisStatusText');
+    
+    const allAnalysisComplete = analysisStatus.frequency_analysis && 
+                               analysisStatus.trend_analysis && 
+                               analysisStatus.pattern_analysis;
+    
+    if (allAnalysisComplete) {
+        if (statusSpinner) statusSpinner.style.display = 'none';
+        if (statusText) {
+            statusText.innerHTML = '<i class="fas fa-check-circle me-1"></i>실제 데이터 분석 완료';
+            statusText.className = 'text-success';
+        }
+    } else {
+        if (statusText) {
+            statusText.innerHTML = '<i class="fas fa-cog fa-spin me-1"></i>데이터 분석 중...';
+            statusText.className = 'text-warning';
+        }
+    }
+    
+    // 개별 분석 상태 업데이트
+    updateIndividualAnalysisStatus('frequency', analysisStatus.frequency_analysis);
+    updateIndividualAnalysisStatus('trend', analysisStatus.trend_analysis);
+    updateIndividualAnalysisStatus('pattern', analysisStatus.pattern_analysis);
+    
+    // 예측 경고 표시
+    const predictionWarning = document.getElementById('predictionWarning');
+    if (predictionWarning) {
+        predictionWarning.style.display = allAnalysisComplete ? 'none' : 'block';
+    }
+}
+
+function updateIndividualAnalysisStatus(type, isComplete) {
+    // 특성 섹션 인디케이터
+    const indicator = document.getElementById(`${type}Indicator`);
+    if (indicator) {
+        const icon = indicator.querySelector('i');
+        if (icon) {
+            icon.className = isComplete ? 
+                `fas fa-${getIconName(type)} text-success` : 
+                `fas fa-${getIconName(type)} text-muted`;
+        }
+    }
+    
+    // 특성 카드 상태
+    const status = document.getElementById(`${type}Status`);
+    if (status) {
+        status.innerHTML = isComplete ? 
+            '<small class="text-success">✅ 분석 완료</small>' : 
+            '<small class="text-warning">⏳ 분석 중...</small>';
+    }
+}
+
+function getIconName(type) {
+    const iconMap = {
+        'frequency': 'chart-bar',
+        'trend': 'trending-up',
+        'pattern': 'project-diagram'
+    };
+    return iconMap[type] || 'cog';
+}
 
 async function loadStatistics() {
     try {
@@ -353,24 +646,64 @@ async function loadStatistics() {
         if (data.hot_numbers && data.cold_numbers) {
             displayHotNumbers(data.hot_numbers);
             displayColdNumbers(data.cold_numbers);
+            
+            // 통계 요약 정보 업데이트
+            const totalDraws = document.getElementById('totalDraws');
+            if (totalDraws) {
+                totalDraws.textContent = data.total_draws || '-';
+            }
+            
+            // 통계 데이터 소스 표시
+            const statsSource = document.getElementById('statsSource');
+            if (statsSource) {
+                statsSource.innerHTML = `
+                    <small class="text-success">
+                        <i class="fas fa-database me-1"></i>${data.data_source}
+                    </small>
+                `;
+            }
         }
     } catch (error) {
         console.error('통계 로드 실패:', error);
+        showErrorMessage('통계 데이터 로드에 실패했습니다.');
     }
 }
 
 function displayHotNumbers(hotNumbers) {
     const container = document.getElementById('hotNumbers');
-    container.innerHTML = hotNumbers.slice(0, 8).map(([num, freq]) => 
-        `<div class="lotto-ball hot-number" title="${freq}회 출현">${num}</div>`
-    ).join('');
+    if (container && hotNumbers.length > 0) {
+        container.innerHTML = hotNumbers.slice(0, 8).map(([num, freq]) => 
+            `<div class="lotto-ball hot-number" title="${freq}회 출현" data-frequency="${freq}">${num}</div>`
+        ).join('');
+    }
 }
 
 function displayColdNumbers(coldNumbers) {
     const container = document.getElementById('coldNumbers');
-    container.innerHTML = coldNumbers.slice(0, 8).map(([num, freq]) => 
-        `<div class="lotto-ball cold-number" title="${freq}회 출현">${num}</div>`
-    ).join('');
+    if (container && coldNumbers.length > 0) {
+        container.innerHTML = coldNumbers.slice(0, 8).map(([num, freq]) => 
+            `<div class="lotto-ball cold-number" title="${freq}회 출현" data-frequency="${freq}">${num}</div>`
+        ).join('');
+    }
 }
+
+function showErrorMessage(message) {
+    const errorModalMessage = document.getElementById('errorModalMessage');
+    if (errorModalMessage) {
+        errorModalMessage.textContent = message;
+        
+        // Bootstrap 모달 표시
+        const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+        errorModal.show();
+    }
+}
+
+// 페이지 가시성 변경 시 자동 새로고침
+document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) {
+        // 페이지가 다시 보일 때 상태 확인
+        setTimeout(checkServerStatus, 1000);
+    }
+});
 </script>
 {% endblock %}
