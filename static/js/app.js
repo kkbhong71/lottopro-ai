@@ -1,4 +1,4 @@
-// LottoPro AI Advanced JavaScript Application (실제 데이터 분석 반영)
+// LottoPro AI Advanced JavaScript Application (CSP 호환 버전)
 
 class LottoProAI {
     constructor() {
@@ -9,6 +9,7 @@ class LottoProAI {
         this.isUpdatingExample = false;
         this.apiRetryCount = 0;
         this.maxRetries = 3;
+        this.abortController = null; // AbortSignal.timeout 대신 사용
         
         this.init();
     }
@@ -18,6 +19,24 @@ class LottoProAI {
         this.initializeAnimations();
         this.loadInitialStats();
         this.checkServerHealth();
+    }
+    
+    // 안전한 타임아웃 생성 함수 (AbortSignal.timeout 대신)
+    createTimeoutController(timeoutMs) {
+        const controller = new AbortController();
+        
+        const timeoutId = setTimeout(() => {
+            controller.abort();
+        }, timeoutMs);
+        
+        // cleanup 함수 추가
+        const originalAbort = controller.abort.bind(controller);
+        controller.abort = () => {
+            clearTimeout(timeoutId);
+            originalAbort();
+        };
+        
+        return controller;
     }
     
     async checkServerHealth() {
@@ -107,7 +126,7 @@ class LottoProAI {
         }
     }
 
-    // ===== 실시간 예시번호 기능 (개선된 버전) =====
+    // ===== 실시간 예시번호 기능 (CSP 호환 버전) =====
     
     initializeHeroExampleNumbers() {
         /**
@@ -133,7 +152,7 @@ class LottoProAI {
 
     async updateHeroExampleNumbers() {
         /**
-         * 히어로 섹션 예시번호 업데이트 (개선된 에러 처리)
+         * 히어로 섹션 예시번호 업데이트 (CSP 호환 버전)
          */
         try {
             console.log('예시번호 업데이트 시작');
@@ -146,13 +165,15 @@ class LottoProAI {
             
             this.isUpdatingExample = true;
             
+            // 안전한 타임아웃 컨트롤러 생성
+            const timeoutController = this.createTimeoutController(10000); // 10초 타임아웃
+            
             const response = await fetch('/api/example-numbers', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                // 타임아웃 설정
-                signal: AbortSignal.timeout(10000) // 10초 타임아웃
+                signal: timeoutController.signal
             });
             
             if (!response.ok) {
@@ -276,7 +297,7 @@ class LottoProAI {
 
     displayHeroExampleNumbers(numbers, analysis = null) {
         /**
-         * 히어로 섹션에 예시번호 표시 (개선된 애니메이션)
+         * 히어로 섹션에 예시번호 표시 (안전한 DOM 조작)
          */
         const container = document.getElementById('heroExampleNumbers');
         if (!container) return;
@@ -292,17 +313,22 @@ class LottoProAI {
         
         // 새 번호들을 생성하고 페이드인
         setTimeout(() => {
-            container.innerHTML = '';
+            // 안전한 DOM 정리
+            while (container.firstChild) {
+                container.removeChild(container.firstChild);
+            }
             
             numbers.forEach((number, index) => {
                 const ball = document.createElement('div');
                 ball.className = `lotto-ball ${this.getNumberColorClass(number)} example-ball`;
-                ball.textContent = number;
+                
+                // 안전한 텍스트 설정
+                ball.textContent = number.toString();
                 ball.style.transform = 'scale(0) rotateY(-180deg)';
                 ball.style.opacity = '0';
                 ball.style.cursor = 'pointer';
                 ball.title = '클릭하면 새로운 AI 예시번호가 생성됩니다';
-                ball.setAttribute('data-number', number);
+                ball.setAttribute('data-number', number.toString());
                 
                 container.appendChild(ball);
                 
@@ -331,7 +357,7 @@ class LottoProAI {
 
     updateExampleAnalysis(numbers, analysis) {
         /**
-         * 예시번호 분석 정보 업데이트
+         * 예시번호 분석 정보 업데이트 (안전한 DOM 조작)
          */
         const infoContainer = document.getElementById('exampleInfo');
         if (infoContainer && analysis) {
@@ -342,16 +368,59 @@ class LottoProAI {
             // 연속번호 계산
             const consecutiveCount = this.countConsecutiveNumbers(numbers);
             
-            const infoHTML = `
-                <small class="text-light opacity-75">
-                    합계: <span class="text-warning">${sum}</span> | 
-                    짝수: <span class="text-info">${evenCount}개</span> | 
-                    홀수: <span class="text-info">${oddCount}개</span> | 
-                    연속: <span class="text-success">${consecutiveCount}개</span> |
-                    <span class="text-warning">✨ 실시간 AI 분석</span>
-                </small>
-            `;
-            infoContainer.innerHTML = infoHTML;
+            // 안전한 DOM 업데이트
+            const small = document.createElement('small');
+            small.className = 'text-light opacity-75';
+            
+            // 안전한 텍스트 노드 생성
+            const textParts = [
+                '합계: ',
+                sum.toString(),
+                ' | 짝수: ',
+                evenCount.toString(),
+                '개 | 홀수: ',
+                oddCount.toString(),
+                '개 | 연속: ',
+                consecutiveCount.toString(),
+                '개 | ✨ 실시간 AI 분석'
+            ];
+            
+            // span 요소들로 안전하게 구성
+            small.appendChild(document.createTextNode(textParts[0]));
+            const sumSpan = document.createElement('span');
+            sumSpan.className = 'text-warning';
+            sumSpan.textContent = textParts[1];
+            small.appendChild(sumSpan);
+            
+            small.appendChild(document.createTextNode(textParts[2]));
+            const evenSpan = document.createElement('span');
+            evenSpan.className = 'text-info';
+            evenSpan.textContent = textParts[3];
+            small.appendChild(evenSpan);
+            
+            small.appendChild(document.createTextNode(textParts[4]));
+            const oddSpan = document.createElement('span');
+            oddSpan.className = 'text-info';
+            oddSpan.textContent = textParts[5];
+            small.appendChild(oddSpan);
+            
+            small.appendChild(document.createTextNode(textParts[6]));
+            const consSpan = document.createElement('span');
+            consSpan.className = 'text-success';
+            consSpan.textContent = textParts[7];
+            small.appendChild(consSpan);
+            
+            small.appendChild(document.createTextNode(textParts[8]));
+            const aiSpan = document.createElement('span');
+            aiSpan.className = 'text-warning';
+            aiSpan.textContent = textParts[9];
+            small.appendChild(aiSpan);
+            
+            // 기존 내용 안전하게 교체
+            while (infoContainer.firstChild) {
+                infoContainer.removeChild(infoContainer.firstChild);
+            }
+            infoContainer.appendChild(small);
             
             // 애니메이션 효과
             infoContainer.style.opacity = '0';
@@ -380,21 +449,39 @@ class LottoProAI {
     
     updateDataSourceInfo(dataSource) {
         /**
-         * 데이터 소스 정보 업데이트
+         * 데이터 소스 정보 업데이트 (안전한 DOM 조작)
          */
         const descContainer = document.getElementById('exampleDescription');
         if (descContainer) {
-            descContainer.innerHTML = `
-                AI가 분석한 예상번호 예시<br>
-                <small class="text-success">📊 ${dataSource}</small><br>
-                <small class="text-warning">✨ 30초마다 실시간 업데이트</small>
-            `;
+            // 안전한 DOM 업데이트
+            while (descContainer.firstChild) {
+                descContainer.removeChild(descContainer.firstChild);
+            }
+            
+            const mainText = document.createTextNode('AI가 분석한 예상번호 예시');
+            const br1 = document.createElement('br');
+            
+            const sourceSmall = document.createElement('small');
+            sourceSmall.className = 'text-success';
+            sourceSmall.textContent = `📊 ${dataSource}`;
+            
+            const br2 = document.createElement('br');
+            
+            const updateSmall = document.createElement('small');
+            updateSmall.className = 'text-warning';
+            updateSmall.textContent = '✨ 30초마다 실시간 업데이트';
+            
+            descContainer.appendChild(mainText);
+            descContainer.appendChild(br1);
+            descContainer.appendChild(sourceSmall);
+            descContainer.appendChild(br2);
+            descContainer.appendChild(updateSmall);
         }
     }
 
     attachExampleClickEvent() {
         /**
-         * 예시번호 클릭 이벤트 연결 (개선된 버전)
+         * 예시번호 클릭 이벤트 연결
          */
         document.addEventListener('click', (event) => {
             if (event.target.classList.contains('example-ball')) {
@@ -416,7 +503,7 @@ class LottoProAI {
         });
     }
 
-    // ===== 예측 기능 (개선된 버전) =====
+    // ===== 예측 기능 (CSP 호환 버전) =====
     
     validateNumberInput(event) {
         const input = event.target;
@@ -526,14 +613,16 @@ class LottoProAI {
             
             console.log('예측 요청 데이터:', requestData);
             
+            // 안전한 타임아웃 컨트롤러 생성
+            this.abortController = this.createTimeoutController(30000); // 30초 타임아웃
+            
             const response = await fetch('/api/predict', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(requestData),
-                // 타임아웃 설정
-                signal: AbortSignal.timeout(30000) // 30초 타임아웃
+                signal: this.abortController.signal
             });
             
             console.log('예측 응답 상태:', response.status);
@@ -606,6 +695,11 @@ class LottoProAI {
             this.showToast(errorMessage, 'error');
         } finally {
             this.stopLoading();
+            // AbortController 정리
+            if (this.abortController) {
+                this.abortController.abort();
+                this.abortController = null;
+            }
         }
     }
     
@@ -722,7 +816,7 @@ class LottoProAI {
     
     displayDataSourceInfo(dataSource) {
         /**
-         * 결과 섹션에 데이터 소스 정보 표시
+         * 결과 섹션에 데이터 소스 정보 표시 (안전한 DOM 조작)
          */
         const resultsSection = document.getElementById('resultsSection');
         if (resultsSection) {
@@ -733,12 +827,26 @@ class LottoProAI {
                 resultsSection.insertBefore(sourceInfo, resultsSection.firstChild);
             }
             
-            sourceInfo.innerHTML = `
-                <div class="d-flex align-items-center">
-                    <i class="fas fa-database me-2"></i>
-                    <span><strong>분석 데이터:</strong> ${dataSource}</span>
-                </div>
-            `;
+            // 안전한 DOM 업데이트
+            while (sourceInfo.firstChild) {
+                sourceInfo.removeChild(sourceInfo.firstChild);
+            }
+            
+            const div = document.createElement('div');
+            div.className = 'd-flex align-items-center';
+            
+            const icon = document.createElement('i');
+            icon.className = 'fas fa-database me-2';
+            
+            const span = document.createElement('span');
+            const strong = document.createElement('strong');
+            strong.textContent = '분석 데이터: ';
+            span.appendChild(strong);
+            span.appendChild(document.createTextNode(dataSource));
+            
+            div.appendChild(icon);
+            div.appendChild(span);
+            sourceInfo.appendChild(div);
         }
     }
     
@@ -746,7 +854,10 @@ class LottoProAI {
         const container = document.getElementById('topRecommendations');
         if (!container) return;
         
-        container.innerHTML = '';
+        // 안전한 DOM 정리
+        while (container.firstChild) {
+            container.removeChild(container.firstChild);
+        }
         
         for (let i = 0; i < recommendations.length; i++) {
             const numbers = recommendations[i];
@@ -762,7 +873,10 @@ class LottoProAI {
         const container = document.getElementById('modelResults');
         if (!container) return;
         
-        container.innerHTML = '';
+        // 안전한 DOM 정리
+        while (container.firstChild) {
+            container.removeChild(container.firstChild);
+        }
         
         const modelOrder = [
             '빈도분석 모델',
@@ -792,36 +906,56 @@ class LottoProAI {
         
         const header = document.createElement('div');
         header.className = 'result-header';
-        header.innerHTML = `
-            <h6 class="result-title">${label}</h6>
-            <div class="result-actions">
-                <button class="btn btn-sm btn-outline-primary me-2" onclick="lottoPro.copyNumbers([${numbers.join(',')}])">
-                    <i class="fas fa-copy"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-success" onclick="lottoPro.shareNumbers([${numbers.join(',')}])">
-                    <i class="fas fa-share"></i>
-                </button>
-            </div>
-        `;
+        
+        const title = document.createElement('h6');
+        title.className = 'result-title';
+        title.textContent = label;
+        
+        const actions = document.createElement('div');
+        actions.className = 'result-actions';
+        
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'btn btn-sm btn-outline-primary me-2';
+        copyBtn.onclick = () => this.copyNumbers(numbers);
+        const copyIcon = document.createElement('i');
+        copyIcon.className = 'fas fa-copy';
+        copyBtn.appendChild(copyIcon);
+        
+        const shareBtn = document.createElement('button');
+        shareBtn.className = 'btn btn-sm btn-outline-success';
+        shareBtn.onclick = () => this.shareNumbers(numbers);
+        const shareIcon = document.createElement('i');
+        shareIcon.className = 'fas fa-share';
+        shareBtn.appendChild(shareIcon);
+        
+        actions.appendChild(copyBtn);
+        actions.appendChild(shareBtn);
+        
+        header.appendChild(title);
+        header.appendChild(actions);
         
         const numbersDisplay = document.createElement('div');
         numbersDisplay.className = 'number-display';
-        numbersDisplay.innerHTML = numbers.map(num => {
+        
+        numbers.forEach(num => {
             const isUserNumber = userNumbers.includes(num);
-            const ballClass = this.getNumberColorClass(num);
-            const extraClass = isUserNumber ? 'user-number' : '';
-            return `<div class="lotto-ball ${ballClass} ${extraClass}" title="${isUserNumber ? '내가 선택한 번호' : ''}">${num}</div>`;
-        }).join('');
+            const ball = document.createElement('div');
+            ball.className = `lotto-ball ${this.getNumberColorClass(num)} ${isUserNumber ? 'user-number' : ''}`;
+            ball.title = isUserNumber ? '내가 선택한 번호' : '';
+            ball.textContent = num.toString();
+            numbersDisplay.appendChild(ball);
+        });
+        
+        cardContent.appendChild(header);
+        cardContent.appendChild(numbersDisplay);
         
         if (userNumbers.length > 0) {
             const legend = document.createElement('small');
             legend.className = 'text-muted mt-2 d-block';
-            legend.innerHTML = '⭐ = 내가 선택한 번호';
+            legend.textContent = '⭐ = 내가 선택한 번호';
             cardContent.appendChild(legend);
         }
         
-        cardContent.appendChild(header);
-        cardContent.appendChild(numbersDisplay);
         card.appendChild(cardContent);
         
         return card;
@@ -833,10 +967,17 @@ class LottoProAI {
         
         const header = document.createElement('div');
         header.className = 'model-header';
-        header.innerHTML = `
-            <h6 class="mb-1">${modelName}</h6>
-            <div class="model-description">${modelData.description}</div>
-        `;
+        
+        const title = document.createElement('h6');
+        title.className = 'mb-1';
+        title.textContent = modelName;
+        
+        const description = document.createElement('div');
+        description.className = 'model-description';
+        description.textContent = modelData.description;
+        
+        header.appendChild(title);
+        header.appendChild(description);
         
         const content = document.createElement('div');
         content.className = 'model-content';
@@ -860,11 +1001,23 @@ class LottoProAI {
         // 통계 정보
         const stats = document.createElement('div');
         stats.className = 'mt-3 d-flex gap-2 flex-wrap';
-        stats.innerHTML = `
-            <span class="badge bg-primary">총 ${modelData.predictions.length}개 조합</span>
-            <span class="badge bg-info">정확도 ${this.getRandomAccuracy()}%</span>
-            <span class="badge bg-success">실제 데이터 분석</span>
-        `;
+        
+        const totalBadge = document.createElement('span');
+        totalBadge.className = 'badge bg-primary';
+        totalBadge.textContent = `총 ${modelData.predictions.length}개 조합`;
+        
+        const accuracyBadge = document.createElement('span');
+        accuracyBadge.className = 'badge bg-info';
+        accuracyBadge.textContent = `정확도 ${this.getRandomAccuracy()}%`;
+        
+        const dataBadge = document.createElement('span');
+        dataBadge.className = 'badge bg-success';
+        dataBadge.textContent = '실제 데이터 분석';
+        
+        stats.appendChild(totalBadge);
+        stats.appendChild(accuracyBadge);
+        stats.appendChild(dataBadge);
+        
         content.appendChild(stats);
         
         section.appendChild(header);
@@ -886,20 +1039,38 @@ class LottoProAI {
     }
     
     displayStatistics(data) {
-        // 핫 넘버 표시
+        // 핫 넘버 표시 (안전한 DOM 조작)
         const hotContainer = document.getElementById('hotNumbers');
         if (hotContainer && data.hot_numbers) {
-            hotContainer.innerHTML = data.hot_numbers.slice(0, 8).map(([num, freq]) => 
-                `<div class="lotto-ball hot-number" title="${freq}회 출현" data-frequency="${freq}">${num}</div>`
-            ).join('');
+            while (hotContainer.firstChild) {
+                hotContainer.removeChild(hotContainer.firstChild);
+            }
+            
+            data.hot_numbers.slice(0, 8).forEach(([num, freq]) => {
+                const ball = document.createElement('div');
+                ball.className = 'lotto-ball hot-number';
+                ball.title = `${freq}회 출현`;
+                ball.setAttribute('data-frequency', freq.toString());
+                ball.textContent = num.toString();
+                hotContainer.appendChild(ball);
+            });
         }
         
-        // 콜드 넘버 표시
+        // 콜드 넘버 표시 (안전한 DOM 조작)
         const coldContainer = document.getElementById('coldNumbers');
         if (coldContainer && data.cold_numbers) {
-            coldContainer.innerHTML = data.cold_numbers.slice(0, 8).map(([num, freq]) => 
-                `<div class="lotto-ball cold-number" title="${freq}회 출현" data-frequency="${freq}">${num}</div>`
-            ).join('');
+            while (coldContainer.firstChild) {
+                coldContainer.removeChild(coldContainer.firstChild);
+            }
+            
+            data.cold_numbers.slice(0, 8).forEach(([num, freq]) => {
+                const ball = document.createElement('div');
+                ball.className = 'lotto-ball cold-number';
+                ball.title = `${freq}회 출현`;
+                ball.setAttribute('data-frequency', freq.toString());
+                ball.textContent = num.toString();
+                coldContainer.appendChild(ball);
+            });
         }
     }
     
@@ -916,13 +1087,25 @@ class LottoProAI {
         const toast = document.createElement('div');
         toast.className = `alert alert-${type === 'error' ? 'danger' : type} alert-dismissible fade show position-fixed custom-toast`;
         toast.style.cssText = 'top: 100px; right: 20px; z-index: 9999; max-width: 350px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);';
-        toast.innerHTML = `
-            <div class="d-flex align-items-center">
-                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
-                <span>${message}</span>
-            </div>
-            <button type="button" class="btn-close" onclick="this.parentElement.remove()"></button>
-        `;
+        
+        const div = document.createElement('div');
+        div.className = 'd-flex align-items-center';
+        
+        const icon = document.createElement('i');
+        icon.className = `fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-triangle' : 'info-circle'} me-2`;
+        
+        const span = document.createElement('span');
+        span.textContent = message;
+        
+        const closeBtn = document.createElement('button');
+        closeBtn.type = 'button';
+        closeBtn.className = 'btn-close';
+        closeBtn.onclick = () => toast.remove();
+        
+        div.appendChild(icon);
+        div.appendChild(span);
+        toast.appendChild(div);
+        toast.appendChild(closeBtn);
         
         document.body.appendChild(toast);
         
@@ -1094,6 +1277,11 @@ class LottoProAI {
             clearInterval(this.exampleUpdateInterval);
         }
         
+        if (this.abortController) {
+            this.abortController.abort();
+            this.abortController = null;
+        }
+        
         this.animationTimeouts.forEach(timeout => clearTimeout(timeout));
     }
 }
@@ -1113,7 +1301,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const alertDiv = document.createElement('div');
         alertDiv.className = 'alert alert-warning position-fixed';
         alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999;';
-        alertDiv.innerHTML = '앱 초기화에 문제가 있습니다. 페이지를 새로고침해주세요.';
+        alertDiv.textContent = '앱 초기화에 문제가 있습니다. 페이지를 새로고침해주세요.';
         document.body.appendChild(alertDiv);
     }
 });
