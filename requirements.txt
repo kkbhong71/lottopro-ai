@@ -1,12 +1,35 @@
+# LottoPro AI v2.0 Requirements
+# Core Framework
+Flask==2.3.7
+Werkzeug==2.3.8
+
+# Data Analysis & Processing
+numpy==1.24.4
+pandas==2.0.3
+
+# Template & Security
+Jinja2==3.1.3
+MarkupSafe==2.1.5
+itsdangerous==2.1.2
+
+# Production Server
+gunicorn==21.2.0
+
+# Utilities
+python-dotenv==1.0.1
+click==8.1.7
+
+# Build Tools (for render.com compatibility)
 setuptools>=65.0.0
 wheel>=0.38.0
-Flask==2.3.3
-numpy==1.24.3
-pandas==2.0.3
-gunicorn==21.2.0
-python-dotenv==1.0.0
-Werkzeug==2.3.7
-Jinja2==3.1.2
-MarkupSafe==2.1.3
-itsdangerous==2.1.2
-click==8.1.7
+
+# Additional Dependencies for Stability
+python-dateutil>=2.8.2
+pytz>=2023.3
+six>=1.16.0
+
+# Optional: Performance & Memory optimization
+psutil>=5.9.0
+
+# Development/Debug (comment out for production)
+# flask-cors==4.0.0
