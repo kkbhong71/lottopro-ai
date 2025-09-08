@@ -1,7 +1,7 @@
 {
-  "name": "LottoPro AI v1.0 FREE",
-  "short_name": "LottoPro AI",
-  "description": "5가지 AI 모델 기반 로또 예상번호 추출 웹앱",
+  "name": "LottoPro AI v2.0 - 실제 데이터 분석",
+  "short_name": "LottoPro AI v2.0",
+  "description": "1,188회차 실제 당첨 데이터를 분석하는 5가지 AI 모델 기반 로또 예상번호 추출 웹앱",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#667eea",
@@ -10,23 +10,29 @@
   "scope": "/",
   "lang": "ko",
   "dir": "ltr",
-  "categories": ["games", "entertainment", "productivity"],
+  "categories": ["games", "entertainment", "productivity", "utilities"],
   "icons": [
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><circle cx='96' cy='96' r='88' fill='%23667eea'/><text x='96' y='130' font-size='100' text-anchor='middle' fill='white'>🎯</text></svg>",
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><circle cx='96' cy='96' r='88' fill='%23667eea'/><text x='96' y='110' font-size='80' text-anchor='middle' fill='white'>🎯</text><text x='96' y='140' font-size='16' text-anchor='middle' fill='white'>v2.0</text></svg>",
       "sizes": "192x192",
       "type": "image/svg+xml",
       "purpose": "any maskable"
     },
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><circle cx='256' cy='256' r='240' fill='%23667eea'/><text x='256' y='340' font-size='280' text-anchor='middle' fill='white'>🎯</text></svg>",
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><circle cx='256' cy='256' r='240' fill='%23667eea'/><text x='256' y='290' font-size='200' text-anchor='middle' fill='white'>🎯</text><text x='256' y='360' font-size='40' text-anchor='middle' fill='white'>v2.0</text></svg>",
       "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "any maskable"
     },
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 144 144'><circle cx='72' cy='72' r='64' fill='%23667eea'/><text x='72' y='96' font-size='72' text-anchor='middle' fill='white'>🎯</text></svg>",
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 144 144'><circle cx='72' cy='72' r='64' fill='%23667eea'/><text x='72' y='85' font-size='60' text-anchor='middle' fill='white'>🎯</text><text x='72' y='110' font-size='12' text-anchor='middle' fill='white'>v2.0</text></svg>",
       "sizes": "144x144",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 72 72'><circle cx='36' cy='36' r='32' fill='%23667eea'/><text x='36' y='45' font-size='32' text-anchor='middle' fill='white'>🎯</text></svg>",
+      "sizes": "72x72",
       "type": "image/svg+xml",
       "purpose": "any"
     }
@@ -34,25 +40,51 @@
   "shortcuts": [
     {
       "name": "AI 예측 시작",
-      "short_name": "예측",
+      "short_name": "AI 예측",
       "description": "바로 AI 예측 시작하기",
       "url": "/#prediction",
       "icons": [
         {
-          "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'><circle cx='48' cy='48' r='44' fill='%2328a745'/><text x='48' y='65' font-size='48' text-anchor='middle' fill='white'>🤖</text></svg>",
+          "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'><circle cx='48' cy='48' r='44' fill='%2328a745'/><text x='48' y='60' font-size='40' text-anchor='middle' fill='white'>🤖</text></svg>",
           "sizes": "96x96",
           "type": "image/svg+xml"
         }
       ]
     },
     {
-      "name": "통계 보기",
+      "name": "실시간 통계",
       "short_name": "통계", 
-      "description": "로또 통계 분석 보기",
+      "description": "실제 데이터 기반 로또 통계 분석",
       "url": "/#stats",
       "icons": [
         {
-          "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'><circle cx='48' cy='48' r='44' fill='%2317a2b8'/><text x='48' y='65' font-size='48' text-anchor='middle' fill='white'>📊</text></svg>",
+          "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'><circle cx='48' cy='48' r='44' fill='%2317a2b8'/><text x='48' y='60' font-size='40' text-anchor='middle' fill='white'>📊</text></svg>",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "AI 모델 소개",
+      "short_name": "AI 모델",
+      "description": "5가지 AI 분석 모델 보기",
+      "url": "/#features",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'><circle cx='48' cy='48' r='44' fill='%23667eea'/><text x='48' y='60' font-size='40' text-anchor='middle' fill='white'>🧠</text></svg>",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
+    },
+    {
+      "name": "서버 상태",
+      "short_name": "상태",
+      "description": "실시간 서버 및 분석 상태 확인",
+      "url": "/api/health",
+      "icons": [
+        {
+          "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'><circle cx='48' cy='48' r='44' fill='%23dc3545'/><text x='48' y='60' font-size='40' text-anchor='middle' fill='white'>💓</text></svg>",
           "sizes": "96x96",
           "type": "image/svg+xml"
         }
@@ -61,11 +93,18 @@
   ],
   "screenshots": [
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 390 844'><rect width='390' height='844' fill='%23f8f9fa'/><rect x='20' y='100' width='350' height='200' fill='%23667eea' rx='15'/><text x='195' y='180' font-size='24' text-anchor='middle' fill='white'>LottoPro AI</text><text x='195' y='210' font-size='16' text-anchor='middle' fill='white'>AI 로또 예측</text></svg>",
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 390 844'><rect width='390' height='844' fill='%23f8f9fa'/><rect x='20' y='100' width='350' height='200' fill='%23667eea' rx='15'/><text x='195' y='160' font-size='20' text-anchor='middle' fill='white'>LottoPro AI v2.0</text><text x='195' y='185' font-size='14' text-anchor='middle' fill='white'>실제 데이터 분석</text><text x='195' y='205' font-size='12' text-anchor='middle' fill='white'>1,188회차 당첨 번호 분석</text><rect x='20' y='320' width='350' height='120' fill='%23fff' rx='10' stroke='%23ddd'/><text x='195' y='350' font-size='14' text-anchor='middle' fill='%23333'>5가지 AI 모델</text><circle cx='80' cy='380' r='15' fill='%23ff6b6b'/><text x='80' y='385' font-size='12' text-anchor='middle' fill='white'>7</text><circle cx='130' cy='380' r='15' fill='%234ecdc4'/><text x='130' y='385' font-size='12' text-anchor='middle' fill='white'>13</text><circle cx='180' cy='380' r='15' fill='%2345b7d1'/><text x='180' y='385' font-size='12' text-anchor='middle' fill='white'>22</text><circle cx='230' cy='380' r='15' fill='%23f9ca24'/><text x='230' y='385' font-size='12' text-anchor='middle' fill='white'>31</text><circle cx='280' cy='380' r='15' fill='%236c5ce7'/><text x='280' y='385' font-size='12' text-anchor='middle' fill='white'>37</text><circle cx='310' cy='380' r='15' fill='%23fd79a8'/><text x='310' y='385' font-size='12' text-anchor='middle' fill='white'>42</text></svg>",
       "sizes": "390x844",
       "type": "image/svg+xml",
       "form_factor": "narrow",
-      "label": "메인 화면"
+      "label": "메인 화면 - AI 예측 결과"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 390 844'><rect width='390' height='844' fill='%23f8f9fa'/><rect x='20' y='100' width='350' height='150' fill='%23fff' rx='15' stroke='%23ddd'/><text x='195' y='130' font-size='16' text-anchor='middle' fill='%23333'>실시간 통계 분석</text><rect x='40' y='150' width='140' height='80' fill='%23ff6b6b' rx='8'/><text x='110' y='170' font-size='12' text-anchor='middle' fill='white'>핫 넘버</text><text x='110' y='200' font-size='20' text-anchor='middle' fill='white'>7, 13, 22</text><rect x='210' y='150' width='140' height='80' fill='%2374b9ff' rx='8'/><text x='280' y='170' font-size='12' text-anchor='middle' fill='white'>콜드 넘버</text><text x='280' y='200' font-size='20' text-anchor='middle' fill='white'>45, 44, 43</text></svg>",
+      "sizes": "390x844",
+      "type": "image/svg+xml",
+      "form_factor": "narrow",
+      "label": "통계 분석 화면"
     }
   ],
   "related_applications": [],
@@ -74,5 +113,27 @@
     "preferred_width": 400
   },
   "protocol_handlers": [],
-  "file_handlers": []
+  "file_handlers": [],
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "share_target": {
+    "action": "/",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "version": "2.0.0",
+  "author": "LottoPro AI Team",
+  "iarc_rating_id": "",
+  "permissions": [],
+  "features": [
+    "real-time-analysis",
+    "offline-capable", 
+    "cross-platform",
+    "responsive-design"
+  ]
 }
