@@ -495,7 +495,7 @@
 
 {% block scripts %}
 <script>
-// 페이지 로드 시 초기화 함수들
+// 페이지 로드 시 초기화 함수들 (CSP 호환 버전)
 document.addEventListener('DOMContentLoaded', function() {
     initializePage();
 });
@@ -541,7 +541,7 @@ async function checkServerStatus() {
             updateAnalysisStatus(health.analysis_status);
         }
         
-        // 데이터 소스 정보 업데이트
+        // 데이터 소스 정보 업데이트 (안전한 DOM 조작)
         const dataSourceText = document.getElementById('dataSourceText');
         if (dataSourceText) {
             dataSourceText.textContent = health.data_source || '데이터 로딩 중...';
@@ -586,12 +586,32 @@ function updateAnalysisStatus(analysisStatus) {
     if (allAnalysisComplete) {
         if (statusSpinner) statusSpinner.style.display = 'none';
         if (statusText) {
-            statusText.innerHTML = '<i class="fas fa-check-circle me-1"></i>실제 데이터 분석 완료';
+            // 안전한 DOM 조작
+            while (statusText.firstChild) {
+                statusText.removeChild(statusText.firstChild);
+            }
+            
+            const icon = document.createElement('i');
+            icon.className = 'fas fa-check-circle me-1';
+            const text = document.createTextNode('실제 데이터 분석 완료');
+            
+            statusText.appendChild(icon);
+            statusText.appendChild(text);
             statusText.className = 'text-success';
         }
     } else {
         if (statusText) {
-            statusText.innerHTML = '<i class="fas fa-cog fa-spin me-1"></i>데이터 분석 중...';
+            // 안전한 DOM 조작
+            while (statusText.firstChild) {
+                statusText.removeChild(statusText.firstChild);
+            }
+            
+            const icon = document.createElement('i');
+            icon.className = 'fas fa-cog fa-spin me-1';
+            const text = document.createTextNode('데이터 분석 중...');
+            
+            statusText.appendChild(icon);
+            statusText.appendChild(text);
             statusText.className = 'text-warning';
         }
     }
@@ -620,12 +640,19 @@ function updateIndividualAnalysisStatus(type, isComplete) {
         }
     }
     
-    // 특성 카드 상태
+    // 특성 카드 상태 (안전한 DOM 조작)
     const status = document.getElementById(`${type}Status`);
     if (status) {
-        status.innerHTML = isComplete ? 
-            '<small class="text-success">✅ 분석 완료</small>' : 
-            '<small class="text-warning">⏳ 분석 중...</small>';
+        // 기존 내용 정리
+        while (status.firstChild) {
+            status.removeChild(status.firstChild);
+        }
+        
+        const small = document.createElement('small');
+        small.className = isComplete ? 'text-success' : 'text-warning';
+        small.textContent = isComplete ? '✅ 분석 완료' : '⏳ 분석 중...';
+        
+        status.appendChild(small);
     }
 }
 
@@ -653,14 +680,25 @@ async function loadStatistics() {
                 totalDraws.textContent = data.total_draws || '-';
             }
             
-            // 통계 데이터 소스 표시
+            // 통계 데이터 소스 표시 (안전한 DOM 조작)
             const statsSource = document.getElementById('statsSource');
             if (statsSource) {
-                statsSource.innerHTML = `
-                    <small class="text-success">
-                        <i class="fas fa-database me-1"></i>${data.data_source}
-                    </small>
-                `;
+                // 기존 내용 정리
+                while (statsSource.firstChild) {
+                    statsSource.removeChild(statsSource.firstChild);
+                }
+                
+                const small = document.createElement('small');
+                small.className = 'text-success';
+                
+                const icon = document.createElement('i');
+                icon.className = 'fas fa-database me-1';
+                
+                const text = document.createTextNode(data.data_source);
+                
+                small.appendChild(icon);
+                small.appendChild(text);
+                statsSource.appendChild(small);
             }
         }
     } catch (error) {
@@ -672,18 +710,38 @@ async function loadStatistics() {
 function displayHotNumbers(hotNumbers) {
     const container = document.getElementById('hotNumbers');
     if (container && hotNumbers.length > 0) {
-        container.innerHTML = hotNumbers.slice(0, 8).map(([num, freq]) => 
-            `<div class="lotto-ball hot-number" title="${freq}회 출현" data-frequency="${freq}">${num}</div>`
-        ).join('');
+        // 안전한 DOM 조작
+        while (container.firstChild) {
+            container.removeChild(container.firstChild);
+        }
+        
+        hotNumbers.slice(0, 8).forEach(([num, freq]) => {
+            const ball = document.createElement('div');
+            ball.className = 'lotto-ball hot-number';
+            ball.title = `${freq}회 출현`;
+            ball.setAttribute('data-frequency', freq.toString());
+            ball.textContent = num.toString();
+            container.appendChild(ball);
+        });
     }
 }
 
 function displayColdNumbers(coldNumbers) {
     const container = document.getElementById('coldNumbers');
     if (container && coldNumbers.length > 0) {
-        container.innerHTML = coldNumbers.slice(0, 8).map(([num, freq]) => 
-            `<div class="lotto-ball cold-number" title="${freq}회 출현" data-frequency="${freq}">${num}</div>`
-        ).join('');
+        // 안전한 DOM 조작
+        while (container.firstChild) {
+            container.removeChild(container.firstChild);
+        }
+        
+        coldNumbers.slice(0, 8).forEach(([num, freq]) => {
+            const ball = document.createElement('div');
+            ball.className = 'lotto-ball cold-number';
+            ball.title = `${freq}회 출현`;
+            ball.setAttribute('data-frequency', freq.toString());
+            ball.textContent = num.toString();
+            container.appendChild(ball);
+        });
     }
 }
 
