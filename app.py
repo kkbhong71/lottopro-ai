@@ -360,13 +360,13 @@ def generate_ultra_safe_sample_data():
         ]
 
 def initialize_data_ultra_safe():
-    """데이터 초기화 및 분석 실행"""
+    """데이터 초기화 및 분석 실행 (실제 당첨번호 우선)"""
     global sample_data, csv_dataframe
     
     try:
-        safe_log("=== 데이터 초기화 시작 ===")
+        safe_log("=== 실제 당첨번호 기반 데이터 초기화 시작 ===")
         
-        # CSV 로드 시도
+        # 1단계: CSV 로드 시도
         csv_dataframe = load_csv_data_ultra_safe()
         
         if csv_dataframe is not None:
@@ -374,30 +374,45 @@ def initialize_data_ultra_safe():
             if len(sample_data) > 0:
                 safe_log(f"✅ CSV 기반 초기화 완료: {len(sample_data)}회차")
                 
-                # 실제 데이터 분석 실행
+                # 실제 CSV 데이터 분석 실행
                 analyze_frequency_patterns()
                 analyze_trend_patterns()
                 analyze_pattern_relationships()
                 
+                safe_log("✅ 실제 CSV 데이터 분석 완료")
                 return sample_data
         
-        # 기본 데이터 생성
-        safe_log("CSV 실패 - 기본 데이터 생성")
+        # 2단계: CSV 실패 시 실제 당첨번호 기반 샘플 사용
+        safe_log("CSV 로드 실패 - 실제 당첨번호 기반 데이터 생성")
         sample_data = generate_ultra_safe_sample_data()
         
-        # 기본 데이터에도 분석 적용
+        if len(sample_data) > 0:
+            # 실제 백업 데이터에도 분석 적용
+            analyze_frequency_patterns()
+            analyze_trend_patterns()
+            analyze_pattern_relationships()
+            
+            safe_log(f"✅ 실제 당첨번호 기반 초기화 완료: {len(sample_data)}회차")
+            safe_log("✅ 실제 백업 데이터 분석 완료")
+            return sample_data
+        
+        # 3단계: 최후의 수단 - 최소한의 실제 데이터
+        safe_log("모든 방법 실패 - 최소 실제 데이터 사용")
+        sample_data = get_real_lotto_backup_data()
+        
+        # 최소 데이터라도 분석 시도
         analyze_frequency_patterns()
-        analyze_trend_patterns()
+        analyze_trend_patterns() 
         analyze_pattern_relationships()
         
-        safe_log(f"✅ 기본 데이터 초기화 완료: {len(sample_data)}회차")
+        safe_log(f"✅ 최소 실제 데이터 초기화 완료: {len(sample_data)}회차")
         return sample_data
         
     except Exception as e:
         safe_log(f"데이터 초기화 전체 실패: {str(e)}")
-        sample_data = [
-            {'회차': 1188, '당첨번호1': 14, '당첨번호2': 16, '당첨번호3': 23, '당첨번호4': 25, '당첨번호5': 31, '당첨번호6': 37, '보너스번호': 42}
-        ]
+        # 그래도 실제 데이터 반환
+        sample_data = get_real_lotto_backup_data()
+        safe_log(f"⚠️ 예외 상황 - 기본 실제 데이터 사용: {len(sample_data)}회차")
         return sample_data
 
 @app.route('/')
