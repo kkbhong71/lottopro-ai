@@ -70,7 +70,7 @@ def convert_csv_ultra_safe(df):
         
         for index, row in df.iterrows():
             try:
-                # 실제 new_1188.csv 구조에 맞춘 완벽한 매핑
+                # 실제 new_1189.csv 구조에 맞춘 완벽한 매핑
                 data_row = {
                     '회차': int(row.get('round', index + 1)),
                     '추첨일': str(row.get('draw date', '')),
@@ -620,7 +620,7 @@ def health_check():
             'csv_loaded': csv_dataframe is not None,
             'sample_data_count': len(sample_data) if sample_data else 0,
             'current_directory': os.getcwd(),
-            'csv_file_exists': os.path.exists('new_1188.csv'),  # 수정된 파일명
+            'csv_file_exists': os.path.exists('new_1189.csv'),  # 수정된 파일명
             'analysis_status': {
                 'frequency_analysis': frequency_analysis is not None,
                 'trend_analysis': trend_analysis is not None,
