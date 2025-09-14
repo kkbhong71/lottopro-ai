@@ -331,7 +331,7 @@ def generate_ultra_safe_sample_data():
         np.random.seed(42)
         data = []
         
-        for draw in range(1188, 988, -1):  # 200회차
+        for draw in range(1189, 988, -1):  # 200회차
             try:
                 numbers = sorted(np.random.choice(range(1, 46), 6, replace=False))
                 available = [x for x in range(1, 46) if x not in numbers]
@@ -357,7 +357,7 @@ def generate_ultra_safe_sample_data():
     except Exception as e:
         safe_log(f"기본 데이터 생성 실패: {str(e)}")
         return [
-            {'회차': 1188, '당첨번호1': 14, '당첨번호2': 16, '당첨번호3': 23, '당첨번호4': 25, '당첨번호5': 31, '당첨번호6': 37, '보너스번호': 42}
+            {'회차': 1189, '당첨번호1': 14, '당첨번호2': 16, '당첨번호3': 23, '당첨번호4': 25, '당첨번호5': 31, '당첨번호6': 37, '보너스번호': 42}
         ]
 
 def initialize_data_ultra_safe():
