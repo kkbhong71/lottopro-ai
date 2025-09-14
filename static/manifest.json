@@ -1,7 +1,7 @@
 {
   "name": "LottoPro AI v2.0 - 실제 데이터 분석",
   "short_name": "LottoPro AI v2.0",
-  "description": "1,188회차 실제 당첨 데이터를 분석하는 5가지 AI 모델 기반 로또 예상번호 추출 웹앱",
+  "description": "1,189회차 실제 당첨 데이터를 분석하는 5가지 AI 모델 기반 로또 예상번호 추출 웹앱",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#667eea",
