@@ -34,7 +34,7 @@ def safe_log(message):
         pass
 
 def load_csv_data_ultra_safe():
-    """new_1188.csv 파일 로드"""
+    """new_1189.csv 파일 로드"""
     global csv_dataframe, PANDAS_AVAILABLE
     
     safe_log("CSV 로드 시작")
@@ -44,8 +44,8 @@ def load_csv_data_ultra_safe():
         return None
     
     try:
-        # 수정: new_1188.csv로 변경
-        csv_path = 'new_1188.csv'
+        # 수정: new_1189.csv로 변경
+        csv_path = 'new_1189.csv'
         
         if not os.path.exists(csv_path):
             safe_log(f"CSV 파일 없음: {csv_path}")
