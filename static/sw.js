@@ -1,4 +1,4 @@
-// LottoPro AI v2.0 Service Worker (최신 CDN 링크 반영)
+// LottoPro AI v1.0 Service Worker (최신 CDN 링크 반영)
 // PWA 오프라인 지원 및 캐싱 전략
 
 const CACHE_NAME = 'lottopro-ai-v2-0-2';  // 버전 업데이트
@@ -234,7 +234,7 @@ function getOfflinePage() {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>LottoPro AI v2.0 - 오프라인</title>
+        <title>LottoPro AI v1.0 - 오프라인</title>
         <style>
             body {
                 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -307,7 +307,7 @@ function getOfflinePage() {
     <body>
         <div class="container">
             <div class="icon">📱</div>
-            <h1 class="title">LottoPro AI v2.0</h1>
+            <h1 class="title">LottoPro AI v1.0</h1>
             <p class="description">
                 현재 오프라인 상태입니다.<br>
                 인터넷 연결을 확인하고 다시 시도해주세요.
@@ -446,4 +446,4 @@ self.addEventListener('message', event => {
   }
 });
 
-console.log('[SW] LottoPro AI v2.0.2 Service Worker 로드 완료 (CSP 호환, 최신 CDN)');
+console.log('[SW] LottoPro AI v1.0.2 Service Worker 로드 완료 (CSP 호환, 최신 CDN)');
