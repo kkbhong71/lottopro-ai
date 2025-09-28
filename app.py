@@ -64,9 +64,9 @@ def load_csv_data_completely():
             safe_log("❌ CSV 파일이 비어있음")
             return None
         
-        # 최신 회차 정보 추출 (첫 번째 행이 최신이라고 가정)
+        # 최신 회차 정보 추출 (마지막 행이 최신)
         try:
-            latest_row = df.iloc[0]
+            latest_row = df.iloc[-1]  # 마지막 행이 최신 회차
             latest_round_info = {
                 'round': int(latest_row['round']),
                 'draw_date': str(latest_row['draw date']),
