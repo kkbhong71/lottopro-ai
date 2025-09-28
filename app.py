@@ -34,7 +34,7 @@ def safe_log(message):
         pass
 
 def load_csv_data_ultra_safe():
-    """new_1189.csv 파일 로드"""
+    """new_1191.csv 파일 로드"""
     global csv_dataframe, PANDAS_AVAILABLE
     
     safe_log("CSV 로드 시작")
@@ -44,8 +44,8 @@ def load_csv_data_ultra_safe():
         return None
     
     try:
-        # 수정: new_1189.csv로 변경
-        csv_path = 'new_1189.csv'
+        # 수정: new_1191.csv로 변경
+        csv_path = 'new_1191.csv'
         
         if not os.path.exists(csv_path):
             safe_log(f"CSV 파일 없음: {csv_path}")
@@ -70,7 +70,7 @@ def convert_csv_ultra_safe(df):
         
         for index, row in df.iterrows():
             try:
-                # 실제 new_1189.csv 구조에 맞춘 완벽한 매핑
+                # 실제 new_1191.csv 구조에 맞춘 완벽한 매핑
                 data_row = {
                     '회차': int(row.get('round', index + 1)),
                     '추첨일': str(row.get('draw date', '')),
@@ -331,7 +331,7 @@ def generate_ultra_safe_sample_data():
         np.random.seed(42)
         data = []
         
-        for draw in range(1189, 988, -1):  # 200회차
+        for draw in range(1191, 988, -1):  # 200회차
             try:
                 numbers = sorted(np.random.choice(range(1, 46), 6, replace=False))
                 available = [x for x in range(1, 46) if x not in numbers]
@@ -357,7 +357,7 @@ def generate_ultra_safe_sample_data():
     except Exception as e:
         safe_log(f"기본 데이터 생성 실패: {str(e)}")
         return [
-            {'회차': 1189, '당첨번호1': 14, '당첨번호2': 16, '당첨번호3': 23, '당첨번호4': 25, '당첨번호5': 31, '당첨번호6': 37, '보너스번호': 42}
+            {'회차': 1191, '당첨번호1': 14, '당첨번호2': 16, '당첨번호3': 23, '당첨번호4': 25, '당첨번호5': 31, '당첨번호6': 37, '보너스번호': 42}
         ]
 
 def initialize_data_ultra_safe():
@@ -620,7 +620,7 @@ def health_check():
             'csv_loaded': csv_dataframe is not None,
             'sample_data_count': len(sample_data) if sample_data else 0,
             'current_directory': os.getcwd(),
-            'csv_file_exists': os.path.exists('new_1189.csv'),  # 수정된 파일명
+            'csv_file_exists': os.path.exists('new_1191.csv'),  # 수정된 파일명
             'analysis_status': {
                 'frequency_analysis': frequency_analysis is not None,
                 'trend_analysis': trend_analysis is not None,
