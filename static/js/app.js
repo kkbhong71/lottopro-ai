@@ -1,4 +1,4 @@
-// LottoPro AI Advanced JavaScript Application (CSP 호환 버전)
+// LottoPro AI Advanced JavaScript Application (완전 동적 데이터 버전)
 
 class LottoProAI {
     constructor() {
@@ -9,7 +9,10 @@ class LottoProAI {
         this.isUpdatingExample = false;
         this.apiRetryCount = 0;
         this.maxRetries = 3;
-        this.abortController = null; // AbortSignal.timeout 대신 사용
+        this.abortController = null;
+        this.currentRoundInfo = null; // 현재 회차 정보 저장
+        this.serverData = null; // 서버에서 받은 실제 데이터 저장
+        this.cachedStatsData = null; // 통계 데이터 캐시
         
         this.init();
     }
@@ -41,13 +44,28 @@ class LottoProAI {
     
     async checkServerHealth() {
         /**
-         * 서버 상태 확인 및 분석 상태 체크
+         * 서버 상태 확인 및 분석 상태 체크 (완전 동적 데이터)
          */
         try {
             const response = await fetch('/api/health');
             const health = await response.json();
             
             console.log('서버 상태:', health);
+            
+            // 서버 데이터 저장
+            this.serverData = health;
+            
+            // 최신 회차 정보 저장 및 표시
+            if (health.latest_round_info) {
+                this.currentRoundInfo = health.latest_round_info;
+                this.displayRoundInfo(health.latest_round_info);
+                console.log(`최신 회차: ${health.latest_round_info.round}회차 (${health.latest_round_info.draw_date})`);
+            }
+            
+            // 데이터 카운트 업데이트
+            if (health.sample_data_count) {
+                this.updateDataCount(health.sample_data_count);
+            }
             
             if (health.analysis_status) {
                 const analysisStatus = health.analysis_status;
@@ -65,11 +83,142 @@ class LottoProAI {
                 }
             }
             
+            // 데이터 소스 정보 업데이트
+            if (health.data_source) {
+                this.updateMainDataSource(health.data_source);
+            }
+            
         } catch (error) {
             console.error('서버 상태 확인 실패:', error);
             // 서버 연결 실패해도 기본 기능은 동작하도록
             setTimeout(() => this.initializeHeroExampleNumbers(), 3000);
         }
+    }
+    
+    displayRoundInfo(roundInfo) {
+        /**
+         * 회차 정보 표시 (안전한 DOM 조작)
+         */
+        // 히어로 섹션 회차 정보 업데이트
+        const currentRoundDisplay = document.getElementById('currentRoundDisplay');
+        if (currentRoundDisplay) {
+            currentRoundDisplay.textContent = roundInfo.round;
+        }
+        
+        const nextRoundDisplay = document.getElementById('nextRoundDisplay');
+        if (nextRoundDisplay) {
+            nextRoundDisplay.textContent = roundInfo.round + 1;
+        }
+        
+        // 회차 정보 상세 표시 (날짜 포함)
+        const roundDetailInfo = document.getElementById('roundDetailInfo');
+        if (roundDetailInfo) {
+            // 안전한 DOM 조작
+            while (roundDetailInfo.firstChild) {
+                roundDetailInfo.removeChild(roundDetailInfo.firstChild);
+            }
+            
+            const small = document.createElement('small');
+            small.className = 'text-muted';
+            
+            // 최신 회차 정보
+            const latestText = document.createTextNode(`최신: ${roundInfo.round}회차 (${roundInfo.draw_date})`);
+            small.appendChild(latestText);
+            
+            const br = document.createElement('br');
+            small.appendChild(br);
+            
+            // 다음 회차 정보  
+            const nextText = document.createTextNode(`다음: ${roundInfo.round + 1}회차 예측`);
+            small.appendChild(nextText);
+            
+            roundDetailInfo.appendChild(small);
+        }
+        
+        // 최신 당첨번호 표시 (선택적)
+        const latestWinningNumbers = document.getElementById('latestWinningNumbers');
+        if (latestWinningNumbers && roundInfo.numbers) {
+            // 안전한 DOM 조작
+            while (latestWinningNumbers.firstChild) {
+                latestWinningNumbers.removeChild(latestWinningNumbers.firstChild);
+            }
+            
+            const title = document.createElement('small');
+            title.className = 'text-muted d-block mb-1';
+            title.textContent = `${roundInfo.round}회차 당첨번호:`;
+            latestWinningNumbers.appendChild(title);
+            
+            const numbersDiv = document.createElement('div');
+            numbersDiv.className = 'd-flex gap-1 flex-wrap justify-content-center';
+            
+            roundInfo.numbers.forEach((num, index) => {
+                const ball = document.createElement('span');
+                ball.className = `badge bg-secondary small`;
+                ball.textContent = num.toString();
+                numbersDiv.appendChild(ball);
+            });
+            
+            // 보너스 번호
+            if (roundInfo.bonus) {
+                const bonusBall = document.createElement('span');
+                bonusBall.className = 'badge bg-warning small ms-1';
+                bonusBall.textContent = `+${roundInfo.bonus}`;
+                numbersDiv.appendChild(bonusBall);
+            }
+            
+            latestWinningNumbers.appendChild(numbersDiv);
+        }
+    }
+    
+    updateDataCount(count) {
+        /**
+         * 데이터 카운트 표시 업데이트
+         */
+        const dataCountDisplay = document.getElementById('dataCountDisplay');
+        if (dataCountDisplay) {
+            // 숫자 애니메이션
+            const currentCount = parseInt(dataCountDisplay.textContent.replace(/,/g, '')) || 0;
+            this.animateNumberChange(dataCountDisplay, currentCount, count);
+        }
+    }
+    
+    animateNumberChange(element, fromValue, toValue) {
+        /**
+         * 숫자 변경 애니메이션
+         */
+        const duration = 1000; // 1초
+        const steps = 20;
+        const stepValue = (toValue - fromValue) / steps;
+        let currentStep = 0;
+        
+        const interval = setInterval(() => {
+            currentStep++;
+            const currentValue = Math.round(fromValue + (stepValue * currentStep));
+            element.textContent = currentValue.toLocaleString();
+            
+            if (currentStep >= steps) {
+                clearInterval(interval);
+                element.textContent = toValue.toLocaleString(); // 최종 정확한 값
+            }
+        }, duration / steps);
+    }
+    
+    updateMainDataSource(dataSource) {
+        /**
+         * 메인 데이터 소스 정보 업데이트 (안전한 DOM 조작)
+         */
+        const dataSourceText = document.getElementById('dataSourceText');
+        if (dataSourceText) {
+            dataSourceText.textContent = dataSource;
+        }
+        
+        const predictionDataSource = document.getElementById('predictionDataSourceText');
+        if (predictionDataSource) {
+            predictionDataSource.textContent = dataSource;
+        }
+        
+        // 히어로 섹션 데이터 소스도 업데이트
+        this.updateDataSourceInfo(dataSource);
     }
     
     initializeEventListeners() {
@@ -112,6 +261,9 @@ class LottoProAI {
             const response = await fetch('/api/stats');
             const data = await response.json();
             
+            // 통계 데이터 캐시
+            this.cachedStatsData = data;
+            
             if (data.hot_numbers && data.cold_numbers) {
                 this.displayStatistics(data);
                 
@@ -119,14 +271,45 @@ class LottoProAI {
                 if (data.analysis_status) {
                     console.log('통계 분석 상태:', data.analysis_status);
                 }
+                
+                // 회차 정보 표시 (stats API에서도 회차 정보 제공)
+                if (data.current_round) {
+                    this.displayStatsRoundInfo(data.current_round, data.next_round);
+                }
             }
         } catch (error) {
             console.error('통계 로드 실패:', error);
             this.showToast('통계 데이터 로드에 실패했습니다.', 'warning');
         }
     }
+    
+    displayStatsRoundInfo(currentRound, nextRound) {
+        /**
+         * 통계 섹션 회차 정보 표시
+         */
+        const statsRoundInfo = document.getElementById('statsRoundInfo');
+        if (statsRoundInfo) {
+            // 안전한 DOM 조작
+            while (statsRoundInfo.firstChild) {
+                statsRoundInfo.removeChild(statsRoundInfo.firstChild);
+            }
+            
+            const div = document.createElement('div');
+            div.className = 'alert alert-info d-inline-flex align-items-center';
+            
+            const icon = document.createElement('i');
+            icon.className = 'fas fa-info-circle me-2';
+            
+            const span = document.createElement('span');
+            span.textContent = `현재: ${currentRound}회차 | 다음 예측 대상: ${nextRound}회차`;
+            
+            div.appendChild(icon);
+            div.appendChild(span);
+            statsRoundInfo.appendChild(div);
+        }
+    }
 
-    // ===== 실시간 예시번호 기능 (CSP 호환 버전) =====
+    // ===== 실시간 예시번호 기능 (완전 동적 데이터 버전) =====
     
     initializeHeroExampleNumbers() {
         /**
@@ -152,7 +335,7 @@ class LottoProAI {
 
     async updateHeroExampleNumbers() {
         /**
-         * 히어로 섹션 예시번호 업데이트 (CSP 호환 버전)
+         * 히어로 섹션 예시번호 업데이트 (완전 동적 버전)
          */
         try {
             console.log('예시번호 업데이트 시작');
@@ -192,6 +375,11 @@ class LottoProAI {
                     this.updateDataSourceInfo(data.data_source);
                 }
                 
+                // 회차 정보 업데이트
+                if (data.current_round && data.next_round) {
+                    this.updateExampleRoundInfo(data.current_round, data.next_round);
+                }
+                
                 // 재시도 카운터 리셋
                 this.apiRetryCount = 0;
                 
@@ -223,51 +411,111 @@ class LottoProAI {
             this.isUpdatingExample = false;
         }
     }
+    
+    updateExampleRoundInfo(currentRound, nextRound) {
+        /**
+         * 예시번호 섹션 회차 정보 업데이트
+         */
+        const exampleRoundInfo = document.getElementById('exampleRoundInfo');
+        if (exampleRoundInfo) {
+            // 안전한 DOM 조작
+            while (exampleRoundInfo.firstChild) {
+                exampleRoundInfo.removeChild(exampleRoundInfo.firstChild);
+            }
+            
+            const small = document.createElement('small');
+            small.className = 'text-info';
+            small.textContent = `${nextRound}회차 예측 예시`;
+            
+            exampleRoundInfo.appendChild(small);
+        }
+    }
 
     generateClientSideExample() {
         /**
-         * 클라이언트에서 고품질 예시번호 생성
+         * 클라이언트에서 실제 데이터 기반 예시번호 생성 (완전 동적 버전)
          */
         try {
             console.log('클라이언트 예시번호 생성 시작');
             
-            const numbers = [];
+            let numbers = [];
             
-            // 실제 로또에서 자주 나오는 번호들 (실제 통계 기반)
-            const realHotNumbers = [7, 13, 17, 22, 23, 31, 37, 42, 1, 14, 16, 25, 29, 33, 44];
-            const mediumNumbers = [2, 5, 8, 11, 18, 19, 26, 27, 30, 34, 35, 38, 39, 40, 43];
-            const coldNumbers = [3, 4, 6, 9, 10, 12, 15, 20, 21, 24, 28, 32, 36, 41, 45];
-            
-            // 현실적인 조합: 핫넘버 2-3개, 미디움 2-3개, 콜드 0-2개
-            const hotCount = Math.random() < 0.7 ? 3 : 2;
-            const mediumCount = Math.random() < 0.6 ? 3 : 2;
-            const coldCount = 6 - hotCount - mediumCount;
-            
-            // 핫넘버에서 선택
-            const selectedHot = this.getRandomElements(realHotNumbers, hotCount);
-            numbers.push(...selectedHot);
-            
-            // 미디움넘버에서 선택
-            const availableMedium = mediumNumbers.filter(n => !numbers.includes(n));
-            const selectedMedium = this.getRandomElements(availableMedium, mediumCount);
-            numbers.push(...selectedMedium);
-            
-            // 콜드넘버에서 선택 (필요한 경우)
-            if (coldCount > 0) {
-                const availableCold = coldNumbers.filter(n => !numbers.includes(n));
-                const selectedCold = this.getRandomElements(availableCold, coldCount);
+            // 1순위: 캐시된 통계 데이터 사용
+            if (this.cachedStatsData && this.cachedStatsData.hot_numbers && this.cachedStatsData.cold_numbers) {
+                console.log('캐시된 통계 데이터 사용');
+                
+                // 실제 핫넘버에서 2-3개 선택
+                const hotNumbers = this.cachedStatsData.hot_numbers.slice(0, 15).map(([num, freq]) => num);
+                const selectedHot = this.getRandomElements(hotNumbers, Math.random() < 0.7 ? 3 : 2);
+                numbers.push(...selectedHot);
+                
+                // 실제 콜드넘버에서 1-2개 선택
+                const coldNumbers = this.cachedStatsData.cold_numbers.slice(0, 10).map(([num, freq]) => num);
+                const selectedCold = this.getRandomElements(coldNumbers, Math.random() < 0.5 ? 1 : 0);
                 numbers.push(...selectedCold);
-            }
-            
-            // 부족한 번호는 전체에서 랜덤 선택
-            while (numbers.length < 6) {
-                const randomNum = Math.floor(Math.random() * 45) + 1;
-                if (!numbers.includes(randomNum)) {
-                    numbers.push(randomNum);
+                
+                // 나머지는 전체 범위에서 랜덤
+                while (numbers.length < 6) {
+                    const randomNum = Math.floor(Math.random() * 45) + 1;
+                    if (!numbers.includes(randomNum)) {
+                        numbers.push(randomNum);
+                    }
                 }
             }
+            // 2순위: 최신 회차 정보 사용
+            else if (this.currentRoundInfo && this.currentRoundInfo.numbers) {
+                console.log('최신 회차 정보 기반 생성');
+                
+                const latestNumbers = this.currentRoundInfo.numbers;
+                
+                // 최신 당첨번호 중 1-2개 포함 (패턴 연관성)
+                const includedCount = Math.random() < 0.6 ? 1 : 2;
+                const selectedFromLatest = this.getRandomElements(latestNumbers, includedCount);
+                numbers.push(...selectedFromLatest);
+                
+                // 나머지는 범위별 균등 분포
+                const ranges = [
+                    [1, 15], [16, 30], [31, 45]
+                ];
+                
+                for (const [min, max] of ranges) {
+                    if (numbers.length >= 6) break;
+                    
+                    let attempts = 0;
+                    while (numbers.length < 6 && attempts < 10) {
+                        const randomNum = Math.floor(Math.random() * (max - min + 1)) + min;
+                        if (!numbers.includes(randomNum)) {
+                            numbers.push(randomNum);
+                            break;
+                        }
+                        attempts++;
+                    }
+                }
+                
+                // 여전히 부족하면 전체 범위에서
+                while (numbers.length < 6) {
+                    const randomNum = Math.floor(Math.random() * 45) + 1;
+                    if (!numbers.includes(randomNum)) {
+                        numbers.push(randomNum);
+                    }
+                }
+            }
+            // 3순위: 최후의 수단 - 현실적인 분포 기반
+            else {
+                console.log('기본 현실적 분포 생성');
+                
+                // 현실적인 로또 분포 (실제 데이터 없어도 합리적)
+                const lowRange = Array.from({length: 15}, (_, i) => i + 1);    // 1-15
+                const midRange = Array.from({length: 15}, (_, i) => i + 16);   // 16-30  
+                const highRange = Array.from({length: 15}, (_, i) => i + 31);  // 31-45
+                
+                // 각 범위에서 2개씩 선택 (균등 분포)
+                numbers.push(...this.getRandomElements(lowRange, 2));
+                numbers.push(...this.getRandomElements(midRange, 2));
+                numbers.push(...this.getRandomElements(highRange, 2));
+            }
             
-            const sortedNumbers = numbers.sort((a, b) => a - b);
+            const sortedNumbers = numbers.slice(0, 6).sort((a, b) => a - b);
             
             // 분석 정보 생성
             const analysis = {
@@ -277,13 +525,40 @@ class LottoProAI {
             };
             
             this.displayHeroExampleNumbers(sortedNumbers, analysis);
-            this.updateDataSourceInfo('클라이언트 AI 생성');
+            
+            // 데이터 소스 표시
+            let sourceText = '클라이언트 AI 생성';
+            if (this.cachedStatsData) {
+                sourceText = '실제 통계 기반 클라이언트 생성';
+            } else if (this.currentRoundInfo) {
+                sourceText = '최신 회차 기반 클라이언트 생성';
+            }
+            this.updateDataSourceInfo(sourceText);
+            
+            // 회차 정보 업데이트 (저장된 정보 사용)
+            if (this.currentRoundInfo) {
+                this.updateExampleRoundInfo(this.currentRoundInfo.round, this.currentRoundInfo.round + 1);
+            }
+            
             console.log('클라이언트 예시번호 생성 완료:', sortedNumbers);
             
         } catch (error) {
             console.error('클라이언트 예시번호 생성 실패:', error);
-            // 최후의 수단
-            this.displayHeroExampleNumbers([7, 13, 22, 31, 37, 42], {sum: 152, even_count: 2, odd_count: 4});
+            // 정말 최후의 수단 - 단순 랜덤
+            const emergencyNumbers = [];
+            while (emergencyNumbers.length < 6) {
+                const randomNum = Math.floor(Math.random() * 45) + 1;
+                if (!emergencyNumbers.includes(randomNum)) {
+                    emergencyNumbers.push(randomNum);
+                }
+            }
+            const sortedEmergency = emergencyNumbers.sort((a, b) => a - b);
+            this.displayHeroExampleNumbers(sortedEmergency, {
+                sum: sortedEmergency.reduce((a, b) => a + b, 0), 
+                even_count: sortedEmergency.filter(n => n % 2 === 0).length,
+                odd_count: sortedEmergency.filter(n => n % 2 !== 0).length
+            });
+            this.updateDataSourceInfo('응급 랜덤 생성');
         }
     }
     
@@ -291,8 +566,10 @@ class LottoProAI {
         /**
          * 배열에서 랜덤하게 지정된 개수만큼 선택
          */
+        if (!array || array.length === 0 || count <= 0) return [];
+        
         const shuffled = [...array].sort(() => 0.5 - Math.random());
-        return shuffled.slice(0, count);
+        return shuffled.slice(0, Math.min(count, array.length));
     }
 
     displayHeroExampleNumbers(numbers, analysis = null) {
@@ -372,8 +649,15 @@ class LottoProAI {
             const small = document.createElement('small');
             small.className = 'text-light opacity-75';
             
+            // 회차 정보 포함한 텍스트 구성
+            let roundText = '';
+            if (this.currentRoundInfo) {
+                roundText = `${this.currentRoundInfo.round + 1}회차 예측 | `;
+            }
+            
             // 안전한 텍스트 노드 생성
             const textParts = [
+                roundText,
                 '합계: ',
                 sum.toString(),
                 ' | 짝수: ',
@@ -386,34 +670,41 @@ class LottoProAI {
             ];
             
             // span 요소들로 안전하게 구성
-            small.appendChild(document.createTextNode(textParts[0]));
+            if (roundText) {
+                const roundSpan = document.createElement('span');
+                roundSpan.className = 'text-info';
+                roundSpan.textContent = textParts[0];
+                small.appendChild(roundSpan);
+            }
+            
+            small.appendChild(document.createTextNode(textParts[1]));
             const sumSpan = document.createElement('span');
             sumSpan.className = 'text-warning';
-            sumSpan.textContent = textParts[1];
+            sumSpan.textContent = textParts[2];
             small.appendChild(sumSpan);
             
-            small.appendChild(document.createTextNode(textParts[2]));
+            small.appendChild(document.createTextNode(textParts[3]));
             const evenSpan = document.createElement('span');
             evenSpan.className = 'text-info';
-            evenSpan.textContent = textParts[3];
+            evenSpan.textContent = textParts[4];
             small.appendChild(evenSpan);
             
-            small.appendChild(document.createTextNode(textParts[4]));
+            small.appendChild(document.createTextNode(textParts[5]));
             const oddSpan = document.createElement('span');
             oddSpan.className = 'text-info';
-            oddSpan.textContent = textParts[5];
+            oddSpan.textContent = textParts[6];
             small.appendChild(oddSpan);
             
-            small.appendChild(document.createTextNode(textParts[6]));
+            small.appendChild(document.createTextNode(textParts[7]));
             const consSpan = document.createElement('span');
             consSpan.className = 'text-success';
-            consSpan.textContent = textParts[7];
+            consSpan.textContent = textParts[8];
             small.appendChild(consSpan);
             
-            small.appendChild(document.createTextNode(textParts[8]));
+            small.appendChild(document.createTextNode(textParts[9]));
             const aiSpan = document.createElement('span');
             aiSpan.className = 'text-warning';
-            aiSpan.textContent = textParts[9];
+            aiSpan.textContent = textParts[10];
             small.appendChild(aiSpan);
             
             // 기존 내용 안전하게 교체
@@ -662,11 +953,16 @@ class LottoProAI {
                     }
                 }
                 
-                if (userNumbers.length > 0) {
-                    this.showToast(`선호 번호 ${userNumbers.length}개를 포함한 AI 예측이 완료되었습니다!`, 'success');
-                } else {
-                    this.showToast('AI 완전 분석 예측이 완료되었습니다!', 'success');
+                // 회차 정보 포함한 성공 메시지
+                let successMessage = 'AI 완전 분석 예측이 완료되었습니다!';
+                if (data.next_round) {
+                    successMessage = `${data.next_round}회차 AI 예측이 완료되었습니다!`;
                 }
+                if (userNumbers.length > 0) {
+                    successMessage = `선호 번호 ${userNumbers.length}개를 포함한 ${data.next_round ? data.next_round + '회차 ' : ''}AI 예측이 완료되었습니다!`;
+                }
+                
+                this.showToast(successMessage, 'success');
                 
                 // 결과로 스크롤
                 setTimeout(() => {
@@ -804,6 +1100,11 @@ class LottoProAI {
             this.displayDataSourceInfo(data.data_source);
         }
         
+        // 회차 정보 표시
+        if (data.current_round && data.next_round) {
+            this.displayResultsRoundInfo(data.current_round, data.next_round);
+        }
+        
         // 최고 추천 번호 표시
         await this.displayTopRecommendations(data.top_recommendations, data.user_numbers);
         
@@ -812,6 +1113,42 @@ class LottoProAI {
         
         // 결과 애니메이션
         this.animateResults();
+    }
+    
+    displayResultsRoundInfo(currentRound, nextRound) {
+        /**
+         * 결과 섹션에 회차 정보 표시
+         */
+        const resultsSection = document.getElementById('resultsSection');
+        if (resultsSection) {
+            let roundInfo = resultsSection.querySelector('.results-round-info');
+            if (!roundInfo) {
+                roundInfo = document.createElement('div');
+                roundInfo.className = 'alert alert-success results-round-info mb-4';
+                resultsSection.insertBefore(roundInfo, resultsSection.firstChild);
+            }
+            
+            // 안전한 DOM 업데이트
+            while (roundInfo.firstChild) {
+                roundInfo.removeChild(roundInfo.firstChild);
+            }
+            
+            const div = document.createElement('div');
+            div.className = 'd-flex align-items-center justify-content-center';
+            
+            const icon = document.createElement('i');
+            icon.className = 'fas fa-trophy me-2';
+            
+            const span = document.createElement('span');
+            const strong = document.createElement('strong');
+            strong.textContent = `${nextRound}회차 AI 예측 결과`;
+            span.appendChild(strong);
+            span.appendChild(document.createTextNode(` (${currentRound}회차까지 분석 완료)`));
+            
+            div.appendChild(icon);
+            div.appendChild(span);
+            roundInfo.appendChild(div);
+        }
     }
     
     displayDataSourceInfo(dataSource) {
