@@ -173,7 +173,7 @@ def convert_csv_to_sample_data(df_or_text):
         
         # 텍스트 모드인 경우
         elif isinstance(df_or_text, dict) and df_or_text.get('mode') == 'text':
-            for i, line in enumerate(df_or_text['data'][:200]):  # 최대 200개만
+            for i, line in enumerate(df_or_text['data']):  # 모든 데이터 처리
                 try:
                     parts = line.strip().split(',')
                     if len(parts) >= 9:
