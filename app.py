@@ -45,7 +45,7 @@ def load_csv_data_completely():
         return load_csv_as_text()
     
     try:
-        csv_path = 'new_1191.csv'
+        csv_path = 'new_1193.csv'
         
         if not os.path.exists(csv_path):
             safe_log(f"❌ CSV 파일 없음: {csv_path}")
@@ -93,7 +93,7 @@ def load_csv_as_text():
     
     try:
         safe_log("텍스트 모드로 CSV 로드 시도")
-        csv_path = 'new_1191.csv'
+        csv_path = 'new_1193.csv'
         
         if not os.path.exists(csv_path):
             safe_log(f"❌ CSV 파일 없음: {csv_path}")
@@ -227,7 +227,7 @@ def create_minimal_fallback_data():
         
         # 2단계: CSV 파일에서 직접 첫 번째 실제 데이터 읽기
         try:
-            csv_path = 'new_1191.csv'
+            csv_path = 'new_1193.csv'
             if os.path.exists(csv_path):
                 safe_log("CSV 파일에서 직접 실제 데이터 읽기 시도")
                 with open(csv_path, 'r', encoding='utf-8') as f:
@@ -237,7 +237,7 @@ def create_minimal_fallback_data():
                     first_data = lines[1].strip().split(',')
                     if len(first_data) >= 9:
                         real_data = {
-                            '회차': int(first_data[0]) if first_data[0].isdigit() else 1191,
+                            '회차': int(first_data[0]) if first_data[0].isdigit() else 1193,
                             '추첨일': first_data[1],
                             '당첨번호1': int(first_data[2]) if first_data[2].isdigit() else 1,
                             '당첨번호2': int(first_data[3]) if first_data[3].isdigit() else 2,
@@ -256,11 +256,11 @@ def create_minimal_fallback_data():
         safe_log("❌❌❌ 경고: CSV 파일이 있는데도 이 코드가 실행됨! 개발자에게 문의 필요")
         safe_log("❌❌❌ 이 상황은 정상적이지 않습니다!")
         
-        # 그래도 최소한 알려진 실제 당첨번호 사용 (1191회차)
+        # 그래도 최소한 알려진 실제 당첨번호 사용 (1193회차)
         return [{
-            '회차': 1191,
+            '회차': 1193,
             '추첨일': '2024-12-28',
-            '당첨번호1': 7,   # 실제 1191회차 당첨번호
+            '당첨번호1': 7,   # 실제 1193회차 당첨번호
             '당첨번호2': 8,   # (예시)
             '당첨번호3': 16,
             '당첨번호4': 20,
@@ -273,7 +273,7 @@ def create_minimal_fallback_data():
         safe_log(f"❌ 백업 데이터 생성도 실패: {str(e)}")
         # 정말 최후의 최후
         return [{
-            '회차': 1191,
+            '회차': 1193,
             '추첨일': '2024-12-28',
             '당첨번호1': 7,
             '당첨번호2': 8,
@@ -592,7 +592,7 @@ def get_example_numbers():
         }
         
         # 현재 최신 회차 정보 포함
-        current_round_info = latest_round_info if latest_round_info else {'round': 1191}
+        current_round_info = latest_round_info if latest_round_info else {'round': 1193}
         
         return jsonify({
             'success': True,
@@ -681,7 +681,7 @@ def predict():
             data_source = f"실제 CSV {len(sample_data)}회차 데이터" if csv_dataframe is not None else f"최소 {len(sample_data)}회차 데이터"
             
             # 현재 회차 정보 포함
-            current_round_info = latest_round_info if latest_round_info else {'round': 1191}
+            current_round_info = latest_round_info if latest_round_info else {'round': 1193}
             
             response = {
                 'success': True,
@@ -735,7 +735,7 @@ def get_stats():
             cold_numbers = [[45, 8], [44, 9], [43, 10], [2, 11], [3, 12]]
         
         # 현재 회차 정보 포함
-        current_round_info = latest_round_info if latest_round_info else {'round': 1191}
+        current_round_info = latest_round_info if latest_round_info else {'round': 1193}
         
         return jsonify({
             'frequency': frequency_analysis['counter'] if frequency_analysis else {},
@@ -774,7 +774,7 @@ def health_check():
             'csv_loaded': csv_dataframe is not None,
             'sample_data_count': len(sample_data) if sample_data else 0,
             'current_directory': os.getcwd(),
-            'csv_file_exists': os.path.exists('new_1191.csv'),
+            'csv_file_exists': os.path.exists('new_1193.csv'),
             'latest_round_info': latest_round_info,
             'analysis_status': {
                 'frequency_analysis': frequency_analysis is not None,
@@ -800,8 +800,8 @@ def health_check():
         
         # CSV 파일 첫 번째 줄 미리보기 (디버깅용)
         try:
-            if os.path.exists('new_1191.csv'):
-                with open('new_1191.csv', 'r', encoding='utf-8') as f:
+            if os.path.exists('new_1193.csv'):
+                with open('new_1193.csv', 'r', encoding='utf-8') as f:
                     status['csv_preview'] = f.readline().strip()[:100]
         except:
             status['csv_preview'] = '읽기 실패'
